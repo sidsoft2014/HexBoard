@@ -5,6 +5,10 @@ using UnityEngine;
 public class Player : PunBehaviour
 {
     public List<Character> PlayerPieces;
+    public List<BoardPiece> ActivePieces;
+
+    public bool isPlayerTurn;
+    public int playerNumber;
 
     private GameManager _gm;
 
@@ -13,7 +17,7 @@ public class Player : PunBehaviour
         PlayerPieces = new List<Character>();
         for (int idx = 0; idx < 5; idx++)
         {
-            PlayerPieces.Add(new Character(this));
+            PlayerPieces.Add(new Character());
         }
     }
 
@@ -32,6 +36,10 @@ public class Player : PunBehaviour
         _gm = FindObjectOfType<GameManager>();
         if (_gm == null)
             Debug.LogError("No game manager found in scene");
+        else
+        {
+            _gm.TurnChanged += On_TurnChanged;
+        }
 
         int idx = 0;
         foreach (var character in PlayerPieces)
@@ -40,7 +48,7 @@ public class Player : PunBehaviour
             {
                 string path = "characters/" + character.prefabName;
                 var prefab = Resources.Load(path, typeof(GameObject));
-                if(prefab == null)
+                if (prefab == null)
                 {
                     Debug.LogError("Resource not found: " + path);
                     continue;
@@ -53,19 +61,21 @@ public class Player : PunBehaviour
                     continue;
                 }
 
-                var nav = obj.GetComponent<Navigatable>();
-                if (nav == null)
+                obj.transform.position = new Vector3(idx, 2.5f, 0);
+                idx += 15;
+
+                var piece = obj.GetComponent<BoardPiece>();
+                if (piece == null)
                 {
-                    Debug.LogError("No navigatable component found.");
+                    Debug.LogError("No board piece component found.");
                     continue;
                 }
 
-                nav.character = character;
-
-                obj.transform.position = new Vector3(idx, 2.5f, 0);
-                idx += 15;
+                piece.Owner = this;
+                piece.SetCharacter(character);
+                ActivePieces.Add(piece);
             }
-            catch(System.Exception ex)
+            catch (System.Exception ex)
             {
                 Debug.LogError(ex.Message);
                 continue;
@@ -75,11 +85,36 @@ public class Player : PunBehaviour
 
     public void Update()
     {
+        if (!isPlayerTurn)
+        {
+            return;
+        }
 
+        if (Input.GetKeyDown(KeyCode.X))
+            DeclareEndTurn();
     }
 
-    public void EndTurn()
+    public void DeclareEndTurn()
     {
+        _gm.EndTurn(this);
+    }
 
+    private void On_TurnChanged(object sender, TurnChangeEvent e)
+    {
+        isPlayerTurn = e.StartingPlayerIdx == playerNumber;
+        if (isPlayerTurn)
+        {
+            foreach (var piece in ActivePieces)
+            {
+                piece.OnTurnStart();
+            }
+        }
+        else if(e.EndingPlayerIdx == playerNumber)
+        {
+            foreach (var piece in ActivePieces)
+            {
+                piece.OnTurnEnd();
+            }
+        }
     }
 }

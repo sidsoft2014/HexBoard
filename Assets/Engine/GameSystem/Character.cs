@@ -7,31 +7,31 @@ using UnityEngine;
 
 public class Character
 {
-    [SerializeField]
-    private int moves = 3,
-        attack = 1,
-        deffence = 1;
-
-    public Player owner;
     public string prefabName = "default",
         description = "default description";
-
-    public int Moves { get { return moves; } }
-    public int Attack { get { return attack; } }
-    public int Deffence { get { return deffence; } }
-
-    public Character(Player owner)
+    
+    private int moves = 3,
+        cost = 1,
+        attack = 1,
+        defence = 1,
+        health = 10;
+    public Character()
     {
-        this.owner = owner;
+
     }
-    public Character(Player owner, string name)
-        : this (owner)
+    public Character(string name)
     {
         this.prefabName = name;
     }
-    public Character(Player owner, string name, string description)
-        : this(owner, name)
+    public Character(string name, string description)
+        : this(name)
     {
         this.description = description;
     }
+
+    public int Attack { get { return attack; } }
+    public int Cost { get { return cost; } }
+    public int Defence { get { return defence; } }
+    public int Health { get { return health; } }
+    public int Moves { get { return moves; } }
 }
