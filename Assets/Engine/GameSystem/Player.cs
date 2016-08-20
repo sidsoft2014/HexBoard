@@ -1,16 +1,17 @@
 ﻿using Photon;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class Player : PunBehaviour
 {
     public List<Character> PlayerPieces;
     public List<BoardPiece> ActivePieces;
-
     public bool isPlayerTurn;
     public int playerNumber;
-
     private GameManager _gm;
+
+    public BoardPiece SelectedPiece { get; private set; }
 
     public void Awake()
     {
@@ -83,6 +84,20 @@ public class Player : PunBehaviour
         }
     }
 
+    internal void SetSelectedPiece(BoardPiece boardPiece)
+    {
+        if (boardPiece.Owner != this)
+            return;
+
+        foreach (var piece in ActivePieces)
+        {
+            bool selected = piece == boardPiece;
+            piece.SetSelected(selected);
+        }
+
+        SelectedPiece = boardPiece;
+    }
+
     public void Update()
     {
         if (!isPlayerTurn)
@@ -109,7 +124,7 @@ public class Player : PunBehaviour
                 piece.OnTurnStart();
             }
         }
-        else if(e.EndingPlayerIdx == playerNumber)
+        else if (e.EndingPlayerIdx == playerNumber)
         {
             foreach (var piece in ActivePieces)
             {

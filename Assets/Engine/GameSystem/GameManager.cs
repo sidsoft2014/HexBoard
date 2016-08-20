@@ -1,29 +1,61 @@
-﻿using System;
+﻿using Photon;
+using System;
 using UnityEngine;
 
-public class TurnChangeEvent : EventArgs
+public class GameManager : PunBehaviour
 {
-    public TurnChangeEvent (int endIdx, int startIdx)
-    {
-
-    }
-
-    public int EndingPlayerIdx { get; private set; }
-    public int StartingPlayerIdx { get; private set; }
-}
-
-public class GameManager : MonoBehaviour
-{
-    private Player[] players;
+    public HexGrid grid;
     private Player currentPlayer;
     private Navigatable[] navObjs;
-    private int turnIdx = 0;
+    private Player[] players;
     private int totalTurns = 0;
+    private int turnIdx = 0;
 
-    public HexGrid grid;
     public event EventHandler<TurnChangeEvent> TurnChanged;
 
-    public int TurnNumber { get; private set; }
+    public int TurnNumber { get { return totalTurns; } }
+
+    public void EndTurn(Player player)
+    {
+        if (players[turnIdx] != player || (currentPlayer != null && currentPlayer != player))
+            return;
+
+        int oldIdx = turnIdx;
+        if (++turnIdx >= players.Length)
+            turnIdx = 0;
+
+        currentPlayer = players[turnIdx];
+        OnTurnChanged(oldIdx);
+
+        ++totalTurns;
+        Debug.Log("Total turns: " + totalTurns);
+    }
+
+    public MoveType GetMoveType(HexCoordinates destination, out Vector3? pos)
+    {
+        pos = grid.ParseMove(destination);
+        if (!pos.HasValue)
+            return MoveType.Invalid;
+
+        foreach (var item in navObjs)
+        {
+            if (item.Position == pos)
+            {
+                return MoveType.Attacking;
+            }
+        }
+
+        return MoveType.Movement;
+    }
+
+    private void OnTurnChanged(int oldIdx)
+    {
+        var handler = TurnChanged;
+        if (handler != null)
+        {
+            handler(this, new TurnChangeEvent(oldIdx, turnIdx));
+        }
+    }
 
     // Use this for initialization
     private void Start()
@@ -57,46 +89,15 @@ public class GameManager : MonoBehaviour
     {
 
     }
+}
 
-    public MoveType GetMoveType(HexCoordinates destination, out Vector3? pos)
+public class TurnChangeEvent : EventArgs
+{
+    public TurnChangeEvent (int endIdx, int startIdx)
     {
-        pos = grid.ParseMove(destination);
-        if (!pos.HasValue)
-            return MoveType.Invalid;
 
-        foreach (var item in navObjs)
-        {
-            if (item.Position == pos)
-            {
-                return MoveType.Attacking;
-            }
-        }
-
-        return MoveType.Movement;
     }
 
-    public void EndTurn(Player player)
-    {
-        if (players[turnIdx] != player || (currentPlayer != null && currentPlayer != player))
-            return;
-
-        int oldIdx = turnIdx;
-        if (++turnIdx >= players.Length)
-            turnIdx = 0;
-
-        currentPlayer = players[turnIdx];
-        OnTurnChanged(oldIdx);
-        ++totalTurns;
-
-        Debug.Log("Total turns: " + totalTurns);
-    }
-
-    private void OnTurnChanged(int oldIdx)
-    {
-        var handler = TurnChanged;
-        if (handler != null)
-        {
-            handler(this, new TurnChangeEvent(oldIdx, turnIdx));
-        }
-    }
+    public int EndingPlayerIdx { get; private set; }
+    public int StartingPlayerIdx { get; private set; }
 }
