@@ -1,6 +1,4 @@
-using System;
 using UnityEngine;
-using System.Collections;
 
 /// <summary>
 /// This script automatically connects to Photon (using the settings file),
@@ -15,7 +13,6 @@ public class ConnectAndJoinRandom : Photon.MonoBehaviour
 
     /// <summary>if we don't want to connect in Start(), we have to "remember" if we called ConnectUsingSettings()</summary>
     private bool ConnectInUpdate = true;
-
 
     public virtual void Start()
     {
@@ -33,10 +30,8 @@ public class ConnectAndJoinRandom : Photon.MonoBehaviour
         }
     }
 
-
     // below, we implement some callbacks of PUN
     // you can find PUN's callbacks in the class PunBehaviour or in enum PhotonNetworkingMessage
-
 
     public virtual void OnConnectedToMaster()
     {

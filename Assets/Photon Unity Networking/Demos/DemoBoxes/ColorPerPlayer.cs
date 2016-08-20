@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using ExitGames.Client.Photon;
+﻿using ExitGames.Client.Photon;
 using Photon;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -38,7 +38,6 @@ public class ColorPerPlayer : PunBehaviour
     public Color MyColor = Color.grey;
 
     public bool ColorPicked { get; set; }
-
 
     public override void OnJoinedRoom()
     {
@@ -84,7 +83,6 @@ public class ColorPerPlayer : PunBehaviour
         PhotonNetwork.player.SetCustomProperties(colorProp);
     }
 
-
     // simple UI to show color
     private void OnGUI()
     {
@@ -93,7 +91,6 @@ public class ColorPerPlayer : PunBehaviour
             return;
         }
         GUILayout.BeginArea(this.ColorLabelArea);
-
 
         GUILayout.BeginHorizontal();
         Color c = GUI.color;
@@ -105,10 +102,8 @@ public class ColorPerPlayer : PunBehaviour
         GUILayout.Label(playerNote);
         GUILayout.EndHorizontal();
 
-
         GUILayout.EndArea();
     }
-
 
     /// <summary>
     /// Attempts to select a color out of the existing, not-yet-taken ones.

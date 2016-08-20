@@ -13,10 +13,8 @@
 /// <summary>Sets up support for Unity-specific types. Can be a blueprint how to register your own Custom Types for sending.</summary>
 #pragma warning restore 1587
 
-
 using ExitGames.Client.Photon;
 using UnityEngine;
-
 
 /// <summary>
 /// Internally used class, containing de/serialization methods for various Unity-specific classes.
@@ -33,11 +31,10 @@ internal static class CustomTypes
         PhotonPeer.RegisterType(typeof(PhotonPlayer), (byte)'P', SerializePhotonPlayer, DeserializePhotonPlayer);
     }
 
-
     #region Custom De/Serializer Methods
 
-
     public static readonly byte[] memVector3 = new byte[3 * 4];
+
     private static short SerializeVector3(StreamBuffer outStream, object customobject)
     {
         Vector3 vo = (Vector3)customobject;
@@ -70,8 +67,8 @@ internal static class CustomTypes
         return vo;
     }
 
-
     public static readonly byte[] memVector2 = new byte[2 * 4];
+
     private static short SerializeVector2(StreamBuffer outStream, object customobject)
     {
         Vector2 vo = (Vector2)customobject;
@@ -101,8 +98,8 @@ internal static class CustomTypes
         return vo;
     }
 
-
     public static readonly byte[] memQuarternion = new byte[4 * 4];
+
     private static short SerializeQuaternion(StreamBuffer outStream, object customobject)
     {
         Quaternion o = (Quaternion)customobject;
@@ -139,6 +136,7 @@ internal static class CustomTypes
     }
 
     public static readonly byte[] memPlayer = new byte[4];
+
     private static short SerializePhotonPlayer(StreamBuffer outStream, object customobject)
     {
         int ID = ((PhotonPlayer)customobject).ID;
@@ -173,5 +171,5 @@ internal static class CustomTypes
         }
     }
 
-    #endregion
+    #endregion Custom De/Serializer Methods
 }

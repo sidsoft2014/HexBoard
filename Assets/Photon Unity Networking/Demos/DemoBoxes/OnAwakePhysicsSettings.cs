@@ -4,7 +4,7 @@ using UnityEngine;
 /// Sets isKinematic to true, GameObject is owned by a another player (PhotonView.isMine == false).
 /// For Rigidbody and Rigidbody2D.
 /// </summary>
-[RequireComponent(typeof (PhotonView))]
+[RequireComponent(typeof(PhotonView))]
 public class OnAwakePhysicsSettings : Photon.MonoBehaviour
 {
     public void Awake()

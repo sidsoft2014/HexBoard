@@ -1,8 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using System.Collections;
-using Hashtable = ExitGames.Client.Photon.Hashtable;
-
 
 /// <summary>
 /// Makes a scene object pickup-able. Needs a PhotonView which belongs to the scene.
@@ -14,19 +11,19 @@ public class PickupItem : Photon.MonoBehaviour, IPunObservable
     ///<summary>Enables you to define a timeout when the picked up item should re-spawn at the same place it was before.</summary>
     /// <remarks>
     /// Set in Inspector per GameObject! The value in code is just the default.
-    /// 
+    ///
     /// If you don't want an item to respawn, set SecondsBeforeRespawn == 0.
     /// If an item does not respawn, it could be consumed or carried around and dropped somewhere else.
-    /// 
+    ///
     /// A respawning item should stick to a fixed position. It should not be observed at all (in any PhotonView).
     /// It can only be consumed and can't be dropped somewhere else (cause that would double the item).
-    /// 
+    ///
     /// This script uses PunRespawn() as RPC and as method that gets called by Invoke() after a timeout.
     /// No matter if the item respawns timed or by Drop, that method makes sure (temporary) owner and other status-values
     /// are being re-set.
     /// </remarks>
     public float SecondsBeforeRespawn = 2;
-    
+
     /// <summary>The most likely trigger to pick up an item. Set in inspector!</summary>
     /// <remarks>Edit the collider and set collision masks to avoid pickups by random objects.</remarks>
     public bool PickupOnTrigger;
@@ -41,20 +38,18 @@ public class PickupItem : Photon.MonoBehaviour, IPunObservable
     /// </remarks>
     public MonoBehaviour OnPickedUpCall;
 
-
     // these values are internally used. they are public for debugging only
-    
+
     /// <summary>If this client sent a pickup. To avoid sending multiple pickup requests before reply is there.</summary>
     public bool SentPickup;
-    
+
     /// <summary>Timestamp when to respawn the item (compared to PhotonNetwork.time). </summary>
     public double TimeOfRespawn;    // needed when we want to update new players when a PickupItem respawns
-    
+
     /// <summary></summary>
     public int ViewID { get { return this.photonView.viewID; } }
 
     public static HashSet<PickupItem> DisabledPickupItems = new HashSet<PickupItem>();
-
 
     public void OnTriggerEnter(Collider other)
     {
@@ -68,8 +63,6 @@ public class PickupItem : Photon.MonoBehaviour, IPunObservable
             this.Pickup();
         }
     }
-
-
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
@@ -87,7 +80,6 @@ public class PickupItem : Photon.MonoBehaviour, IPunObservable
         }
     }
 
-
     public void Pickup()
     {
         if (this.SentPickup)
@@ -95,12 +87,11 @@ public class PickupItem : Photon.MonoBehaviour, IPunObservable
             // skip sending more pickups until the original pickup-RPC got back to this client
             return;
         }
-        
+
         this.SentPickup = true;
         this.photonView.RPC("PunPickup", PhotonTargets.AllViaServer);
     }
 
-    
     /// <summary>Makes use of RPC PunRespawn to drop an item (sent through server for all).</summary>
     public void Drop()
     {
@@ -119,13 +110,11 @@ public class PickupItem : Photon.MonoBehaviour, IPunObservable
         }
     }
 
-
     [PunRPC]
     public void PunPickup(PhotonMessageInfo msgInfo)
     {
         // when this client's RPC gets executed, this client no longer waits for a sent pickup and can try again
         if (msgInfo.sender.isLocal) this.SentPickup = false;
-
 
         // In this solution, picked up items are disabled. They can't be picked up again this way, etc.
         // You could check "active" first, if you're not interested in failed pickup-attempts.
@@ -136,17 +125,15 @@ public class PickupItem : Photon.MonoBehaviour, IPunObservable
             return;     // makes this RPC being ignored
         }
 
-        
         // if the RPC isn't ignored by now, this is a successful pickup. this might be "my" pickup and we should do a callback
         this.PickupIsMine = msgInfo.sender.isLocal;
-        
+
         // call the method OnPickedUp(PickupItem item) if a GameObject was defined as callback target
         if (this.OnPickedUpCall != null)
         {
             // you could also skip callbacks for items that are not picked up by this client by using: if (this.PickupIsMine)
             this.OnPickedUpCall.SendMessage("OnPickedUp", this);
         }
-
 
         // setup a respawn (or none, if the item has to be dropped)
         if (SecondsBeforeRespawn <= 0)
@@ -170,7 +157,7 @@ public class PickupItem : Photon.MonoBehaviour, IPunObservable
 
     internal void PickedUp(float timeUntilRespawn)
     {
-        // this script simply disables the GO for a while until it respawns. 
+        // this script simply disables the GO for a while until it respawns.
         this.gameObject.SetActive(false);
         PickupItem.DisabledPickupItems.Add(this);
         this.TimeOfRespawn = 0;
@@ -181,7 +168,6 @@ public class PickupItem : Photon.MonoBehaviour, IPunObservable
             Invoke("PunRespawn", timeUntilRespawn);
         }
     }
-
 
     [PunRPC]
     internal void PunRespawn(Vector3 pos)
@@ -194,12 +180,11 @@ public class PickupItem : Photon.MonoBehaviour, IPunObservable
     [PunRPC]
     internal void PunRespawn()
     {
-        #if DEBUG
+#if DEBUG
         // debugging: in some cases, the respawn is "late". it's unclear why! just be aware of this.
         double timeDiffToRespawnTime = PhotonNetwork.time - this.TimeOfRespawn;
         if (timeDiffToRespawnTime > 0.1f) Debug.LogWarning("Spawn time is wrong by: " + timeDiffToRespawnTime + " (this is not an error. you just need to be aware of this.)");
-        #endif
-
+#endif
 
         // if this is called from another thread, we might want to do this in OnEnable() instead of here (depends on Invoke's implementation)
         PickupItem.DisabledPickupItems.Remove(this);

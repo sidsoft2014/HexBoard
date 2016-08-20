@@ -17,7 +17,6 @@ public class DemoOwnershipGui : MonoBehaviour
         }
     }
 
-
     #region Unity
 
     public void OnGUI()
@@ -32,8 +31,6 @@ public class DemoOwnershipGui : MonoBehaviour
             }
         }
         GUILayout.EndArea();
-
-
 
         if (PhotonNetwork.inRoom)
         {
@@ -61,5 +58,5 @@ public class DemoOwnershipGui : MonoBehaviour
         }
     }
 
-    #endregion
+    #endregion Unity
 }

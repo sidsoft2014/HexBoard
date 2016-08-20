@@ -1,18 +1,3 @@
-// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="SocketTcp.cs" company="Exit Games GmbH">
-//   Copyright (c) Exit Games GmbH.  All rights reserved.
-// </copyright>
-// <summary>
-//   Internal class to encapsulate the network i/o functionality for the realtime libary.
-// </summary>
-// <author>developer@exitgames.com</author>
-// --------------------------------------------------------------------------------------------------------------------
-
-using System;
-using System.Collections;
-using UnityEngine;
-using SupportClassPun = ExitGames.Client.Photon.SupportClass;
-
 #if UNITY_WEBGL
 
 namespace ExitGames.Client.Photon
@@ -67,7 +52,6 @@ namespace ExitGames.Client.Photon
             //    return false;
             //}
 
-
             State = PhotonSocketState.Connecting;
 
             if (websocketConnectionObject != null)
@@ -87,7 +71,6 @@ namespace ExitGames.Client.Photon
             mb.StartCoroutine(ReceiveLoop());
             return true;
         }
-
 
         public override bool Disconnect()
         {
@@ -158,7 +141,6 @@ namespace ExitGames.Client.Photon
             return PhotonSocketError.NoData;
         }
 
-
         internal const int ALL_HEADER_BYTES = 9;
         internal const int TCP_HEADER_BYTES = 7;
         internal const int MSG_HEADER_BYTES = 2;
@@ -203,7 +185,6 @@ namespace ExitGames.Client.Photon
 						{
 							this.Listener.DebugReturn(DebugLevel.ALL, "TCP << " + inBuff.Length + " = " + SupportClassPun.ByteArrayToString(inBuff));
 						}
-
 
 						// check if it's a ping-result (first byte = 0xF0). this is 9 bytes in total. no other headers!
 						// note: its a coincidence that ping-result-size == header-size. if this changes we have to refactor this

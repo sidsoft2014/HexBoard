@@ -8,10 +8,7 @@
 // <author>developer@exitgames.com</author>
 // ----------------------------------------------------------------------------
 
-using System;
 using ExitGames.Client.Photon;
-using UnityEngine;
-
 
 /// <summary>
 /// This class resembles a room that PUN joins (or joined).
@@ -20,8 +17,6 @@ using UnityEngine;
 /// \ingroup publicApi
 public class Room : RoomInfo
 {
-
-
     /// <summary>The name of a room. Unique identifier (per Loadbalancing group) for a room/match.</summary>
     public new string name
     {
@@ -111,7 +106,6 @@ public class Room : RoomInfo
         }
     }
 
-
     /// <summary>
     /// Sets a limit of players to this room. This property is shown in lobby, too.
     /// If the room is full (players count == maxplayers), joining this room will fail.
@@ -145,7 +139,6 @@ public class Room : RoomInfo
         }
     }
 
-
     /// <summary>Count of players in this room.</summary>
     public new int playerCount
     {
@@ -174,7 +167,7 @@ public class Room : RoomInfo
         get { return this.expectedUsersField; }
     }
 
-	/// <summary>The ID (actorNumber) of the current Master Client of this room.</summary>
+    /// <summary>The ID (actorNumber) of the current Master Client of this room.</summary>
     /// <remarks>See also: PhotonNetwork.masterClient.</remarks>
     protected internal int masterClientId
     {
@@ -187,7 +180,6 @@ public class Room : RoomInfo
             this.masterClientIdField = value;
         }
     }
-
 
     internal Room(string roomName, RoomOptions options) : base(roomName, null)
     {
@@ -204,7 +196,6 @@ public class Room : RoomInfo
         this.InternalCacheProperties(options.CustomRoomProperties);
         this.propertiesListedInLobby = options.CustomRoomPropertiesForLobby;
     }
-
 
     /// <summary>
     /// Updates the current room's Custom Properties with new/updated key-values.
@@ -264,11 +255,8 @@ public class Room : RoomInfo
         Hashtable customProps = propertiesToSet.StripToStringKeys() as Hashtable;
         Hashtable customPropsToCheck = expectedValues.StripToStringKeys() as Hashtable;
 
-
         // no expected values -> set and callback
         bool noCas = customPropsToCheck == null || customPropsToCheck.Count == 0;
-
-
 
         if (!PhotonNetwork.offlineMode)
         {
@@ -315,7 +303,6 @@ public class Room : RoomInfo
         props[GamePropertyKey.ExpectedUsers] = null;
         PhotonNetwork.networkingPeer.OpSetPropertiesOfRoom(props, expectedProperties: null, webForward: false);
     }
-
 
     /// <summary>Returns a summary of this Room instance as string.</summary>
     /// <returns>Summary of this Room instance.</returns>

@@ -13,10 +13,7 @@
 /// <summary>Wraps up several of the commonly used enumerations. </summary>
 #pragma warning restore 1587
 
-
 using System;
-using ExitGames.Client.Photon;
-
 
 /// <summary>
 /// This enum defines the set of MonoMessages Photon Unity Networking is using as callbacks. Implemented by PunBehaviour.
@@ -417,19 +414,19 @@ public enum PhotonNetworkingMessage
     OnLobbyStatisticsUpdate,
 }
 
-
 /// <summary>Used to define the level of logging output created by the PUN classes. Either log errors, info (some more) or full.</summary>
 /// \ingroup publicApi
 public enum PhotonLogLevel
 {
     /// <summary>Show only errors. Minimal output. Note: Some might be "runtime errors" which you have to expect.</summary>
     ErrorsOnly,
+
     /// <summary>Logs some of the workflow, calls and results.</summary>
     Informational,
+
     /// <summary>Every available log call gets into the console/log. Only use for debugging.</summary>
     Full
 }
-
 
 /// <summary>Enum of "target" options for RPCs. These define which remote clients get your RPC call. </summary>
 /// \ingroup publicApi
@@ -437,20 +434,26 @@ public enum PhotonTargets
 {
     /// <summary>Sends the RPC to everyone else and executes it immediately on this client. Player who join later will not execute this RPC.</summary>
     All,
+
     /// <summary>Sends the RPC to everyone else. This client does not execute the RPC. Player who join later will not execute this RPC.</summary>
     Others,
+
     /// <summary>Sends the RPC to MasterClient only. Careful: The MasterClient might disconnect before it executes the RPC and that might cause dropped RPCs.</summary>
     MasterClient,
+
     /// <summary>Sends the RPC to everyone else and executes it immediately on this client. New players get the RPC when they join as it's buffered (until this client leaves).</summary>
     AllBuffered,
+
     /// <summary>Sends the RPC to everyone. This client does not execute the RPC. New players get the RPC when they join as it's buffered (until this client leaves).</summary>
     OthersBuffered,
+
     /// <summary>Sends the RPC to everyone (including this client) through the server.</summary>
     /// <remarks>
     /// This client executes the RPC like any other when it received it from the server.
     /// Benefit: The server's order of sending the RPCs is the same on all clients.
     /// </remarks>
     AllViaServer,
+
     /// <summary>Sends the RPC to everyone (including this client) through the server and buffers it for players joining later.</summary>
     /// <remarks>
     /// This client executes the RPC like any other when it received it from the server.
@@ -458,7 +461,6 @@ public enum PhotonTargets
     /// </remarks>
     AllBufferedViaServer
 }
-
 
 /// <summary>Currently available <a href="http://doc.photonengine.com/en/pun/current/reference/regions">Photon Cloud regions</a> as enum.</summary>
 /// <remarks>
@@ -468,25 +470,31 @@ public enum CloudRegionCode
 {
     /// <summary>European servers in Amsterdam.</summary>
     eu = 0,
+
     /// <summary>US servers (East Coast).</summary>
     us = 1,
+
     /// <summary>Asian servers in Singapore.</summary>
     asia = 2,
+
     /// <summary>Japanese servers in Tokyo.</summary>
     jp = 3,
+
     /// <summary>Australian servers in Melbourne.</summary>
     au = 5,
+
     ///<summary>USA West, San José, usw</summary>
     usw = 6,
+
     ///<summary>South America	, Sao Paulo, sa</summary>
     sa = 7,
+
     ///<summary>Canada East, Montreal, cae</summary>
     cae = 8,
-    
+
     /// <summary>No region selected.</summary>
     none = 4
 };
-
 
 /// <summary>
 /// Available regions as enum of flags. To be used as "enabled" flags for Best Region pinging.
@@ -495,16 +503,15 @@ public enum CloudRegionCode
 [Flags]
 public enum CloudRegionFlag
 {
-    eu =    1 << 0,
-    us =    1 << 1,
-    asia =  1 << 2,
-    jp =    1 << 3,
-    au =    1 << 4,
-    usw =   1 << 5,
-    sa =    1 << 6,
-    cae =   1 << 7
+    eu = 1 << 0,
+    us = 1 << 1,
+    asia = 1 << 2,
+    jp = 1 << 3,
+    au = 1 << 4,
+    usw = 1 << 5,
+    sa = 1 << 6,
+    cae = 1 << 7
 };
-
 
 /// <summary>
 /// High level connection state of the client. Better use the more detailed <see cref="ClientState"/>.
@@ -518,7 +525,4 @@ public enum ConnectionState
     InitializingApplication
 }
 
-
-
 // Photon properties, internally set by PhotonNetwork (PhotonNetwork builtin properties)
-

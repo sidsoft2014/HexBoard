@@ -11,215 +11,223 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-using System.Collections;
-
 namespace ExitGames.Demos.DemoAnimator
 {
-	/// <summary>
-	/// Player manager. 
-	/// Handles fire Input and Beams.
-	/// </summary>
-	public class PlayerManager : Photon.PunBehaviour, IPunObservable {
+    /// <summary>
+    /// Player manager.
+    /// Handles fire Input and Beams.
+    /// </summary>
+    public class PlayerManager : Photon.PunBehaviour, IPunObservable
+    {
+        #region Public Variables
 
-		#region Public Variables
+        [Tooltip("The Player's UI GameObject Prefab")]
+        public GameObject PlayerUiPrefab;
 
-		[Tooltip("The Player's UI GameObject Prefab")]
-		public GameObject PlayerUiPrefab;
+        [Tooltip("The Beams GameObject to control")]
+        public GameObject Beams;
 
-		[Tooltip("The Beams GameObject to control")]
-		public GameObject Beams;
+        [Tooltip("The current Health of our player")]
+        public float Health = 1f;
 
-		[Tooltip("The current Health of our player")]
-		public float Health = 1f;
+        [Tooltip("The local player instance. Use this to know if the local player is represented in the Scene")]
+        public static GameObject LocalPlayerInstance;
 
-		[Tooltip("The local player instance. Use this to know if the local player is represented in the Scene")]
-		public static GameObject LocalPlayerInstance;
+        #endregion Public Variables
 
-		#endregion
+        #region Private Variables
 
-		#region Private Variables
+        //True, when the user is firing
+        private bool IsFiring;
 
-		//True, when the user is firing
-		bool IsFiring;
-		
-		#endregion
+        #endregion Private Variables
 
-		#region MonoBehaviour CallBacks
-		
-		/// <summary>
-		/// MonoBehaviour method called on GameObject by Unity during early initialization phase.
-		/// </summary>
-		void Awake()
-		{
-			if (Beams==null)
-			{
-				Debug.LogError("<Color=Red><b>Missing</b></Color> Beams Reference.",this);
-			}else{
-				Beams.SetActive(false);
-			}
+        #region MonoBehaviour CallBacks
 
-			// #Important
-			// used in GameManager.cs: we keep track of the localPlayer instance to prevent instanciation when levels are synchronized
-			if ( photonView.isMine)
-			{
-				PlayerManager.LocalPlayerInstance = this.gameObject;
-			}
+        /// <summary>
+        /// MonoBehaviour method called on GameObject by Unity during early initialization phase.
+        /// </summary>
+        private void Awake()
+        {
+            if (Beams == null)
+            {
+                Debug.LogError("<Color=Red><b>Missing</b></Color> Beams Reference.", this);
+            }
+            else
+            {
+                Beams.SetActive(false);
+            }
 
-			// #Critical
-			// we flag as don't destroy on load so that instance survives level synchronization, thus giving a seamless experience when levels load.
-			DontDestroyOnLoad(this.gameObject);
-		}
+            // #Important
+            // used in GameManager.cs: we keep track of the localPlayer instance to prevent instanciation when levels are synchronized
+            if (photonView.isMine)
+            {
+                PlayerManager.LocalPlayerInstance = this.gameObject;
+            }
 
-		/// <summary>
-		/// MonoBehaviour method called on GameObject by Unity during initialization phase.
-		/// </summary>
-		void Start()
-		{
-			CameraWork _cameraWork = this.gameObject.GetComponent<CameraWork>();
+            // #Critical
+            // we flag as don't destroy on load so that instance survives level synchronization, thus giving a seamless experience when levels load.
+            DontDestroyOnLoad(this.gameObject);
+        }
 
-			if (_cameraWork!=null )
-			{
-				if ( photonView.isMine)
-				{
-					_cameraWork.OnStartFollowing();
-				}
-			}else{
-				Debug.LogError("<Color=Red><b>Missing</b></Color> CameraWork Component on player Prefab.",this);
-			}
+        /// <summary>
+        /// MonoBehaviour method called on GameObject by Unity during initialization phase.
+        /// </summary>
+        private void Start()
+        {
+            CameraWork _cameraWork = this.gameObject.GetComponent<CameraWork>();
 
-			// Create the UI
-			if (PlayerUiPrefab!=null)
-			{
-				GameObject _uiGo =  Instantiate(PlayerUiPrefab) as GameObject;
-				_uiGo.SendMessage ("SetTarget", this, SendMessageOptions.RequireReceiver);
-			}else{
-				Debug.LogWarning("<Color=Red><b>Missing</b></Color> PlayerUiPrefab reference on player Prefab.",this);
-			}
+            if (_cameraWork != null)
+            {
+                if (photonView.isMine)
+                {
+                    _cameraWork.OnStartFollowing();
+                }
+            }
+            else
+            {
+                Debug.LogError("<Color=Red><b>Missing</b></Color> CameraWork Component on player Prefab.", this);
+            }
 
-		}
+            // Create the UI
+            if (PlayerUiPrefab != null)
+            {
+                GameObject _uiGo = Instantiate(PlayerUiPrefab) as GameObject;
+                _uiGo.SendMessage("SetTarget", this, SendMessageOptions.RequireReceiver);
+            }
+            else
+            {
+                Debug.LogWarning("<Color=Red><b>Missing</b></Color> PlayerUiPrefab reference on player Prefab.", this);
+            }
+        }
 
-		/// <summary>
-		/// MonoBehaviour method called on GameObject by Unity on every frame.
-		/// Process Inputs if local player.
-		/// Show and hide the beams
-		/// Watch for end of game, when local player health is 0.
-		/// </summary>
-		void Update()
-		{
-			// we only process Inputs and check health if we are the local player
-			if (photonView.isMine) {
+        /// <summary>
+        /// MonoBehaviour method called on GameObject by Unity on every frame.
+        /// Process Inputs if local player.
+        /// Show and hide the beams
+        /// Watch for end of game, when local player health is 0.
+        /// </summary>
+        private void Update()
+        {
+            // we only process Inputs and check health if we are the local player
+            if (photonView.isMine)
+            {
+                ProcessInputs();
 
-				ProcessInputs ();
+                if (Health <= 0f)
+                {
+                    GameManager.Instance.LeaveRoom();
+                }
+            }
 
-				if ( Health <= 0f)
-				{
-					GameManager.Instance.LeaveRoom();
-				}
+            if (Beams != null && IsFiring != Beams.GetActive())
+            {
+                Beams.SetActive(IsFiring);
+            }
+        }
 
-			}
+        /// <summary>
+        /// MonoBehaviour method called when the Collider 'other' enters the trigger.
+        /// Affect Health of the Player if the collider is a beam
+        /// Note: when jumping and firing at the same, you'll find that the player's own beam intersects with itself
+        /// One could move the collider further away to prevent this or check if the beam belongs to the player.
+        /// </summary>
+        private void OnTriggerEnter(Collider other)
+        {
+            if (!photonView.isMine)
+            {
+                return;
+            }
 
-			if (Beams!=null && IsFiring != Beams.GetActive ()) {
-				Beams.SetActive(IsFiring);
-			}
-		}
+            // We are only interested in Beamers
+            // we should be using tags but for the sake of distribution, let's simply check by name.
+            if (!other.name.Contains("Beam"))
+            {
+                return;
+            }
 
-		/// <summary>
-		/// MonoBehaviour method called when the Collider 'other' enters the trigger.
-		/// Affect Health of the Player if the collider is a beam
-		/// Note: when jumping and firing at the same, you'll find that the player's own beam intersects with itself
-		/// One could move the collider further away to prevent this or check if the beam belongs to the player.
-		/// </summary>
-		void OnTriggerEnter(Collider other) {
+            Health -= 0.1f;
+        }
 
-			if (! photonView.isMine) {
-				return;
-			}
+        /// <summary>
+        /// MonoBehaviour method called once per frame for every Collider 'other' that is touching the trigger.
+        /// We're going to affect health while the beams are interesting the player
+        /// </summary>
+        /// <param name="other">Other.</param>
+        private void OnTriggerStay(Collider other)
+        {
+            // we dont' do anything if we are not the local player.
+            if (!photonView.isMine)
+            {
+                return;
+            }
 
+            // We are only interested in Beamers
+            // we should be using tags but for the sake of distribution, let's simply check by name.
+            if (!other.name.Contains("Beam"))
+            {
+                return;
+            }
 
-			// We are only interested in Beamers
-			// we should be using tags but for the sake of distribution, let's simply check by name.
-			if (! other.name.Contains("Beam"))
-			{
-				return;
-			}
+            // we slowly affect health when beam is constantly hitting us, so player has to move to prevent death.
+            Health -= 0.1f * Time.deltaTime;
+        }
 
-			Health -= 0.1f;
-		}
+        /// <summary>
+        /// MonoBehaviour method called after a new level of index 'level' was loaded.
+        /// We recreate the Player UI because it was destroy when we switched level.
+        /// Also reposition the player if outside the current arena.
+        /// </summary>
+        /// <param name="level">Level index loaded</param>
+        private void OnLevelWasLoaded(int level)
+        {
+            // check if we are outside the Arena and if it's the case, spawn around the center of the arena in a safe zone
+            if (!Physics.Raycast(transform.position, -Vector3.up, 5f))
+            {
+                transform.position = new Vector3(0f, 5f, 0f);
+            }
 
-		/// <summary>
-		/// MonoBehaviour method called once per frame for every Collider 'other' that is touching the trigger.
-		/// We're going to affect health while the beams are interesting the player
-		/// </summary>
-		/// <param name="other">Other.</param>
-		void OnTriggerStay(Collider other) {
+            GameObject _uiGo = Instantiate(PlayerUiPrefab) as GameObject;
+            _uiGo.SendMessage("SetTarget", this, SendMessageOptions.RequireReceiver);
+        }
 
-			// we dont' do anything if we are not the local player.
-			if (! photonView.isMine) {
-				return;
-			}
+        #endregion MonoBehaviour CallBacks
 
-			// We are only interested in Beamers
-			// we should be using tags but for the sake of distribution, let's simply check by name.
-			if (! other.name.Contains("Beam"))
-			{
-				return;
-			}
+        #region Private Methods
 
-			// we slowly affect health when beam is constantly hitting us, so player has to move to prevent death.
-			Health -= 0.1f*Time.deltaTime; 
-		}
+        /// <summary>
+        /// Processes the inputs. This MUST ONLY BE USED when the player has authority over this Networked GameObject (photonView.isMine == true)
+        /// </summary>
+        private void ProcessInputs()
+        {
+            if (Input.GetButtonDown("Fire1"))
+            {
+                // we don't want to fire when we interact with UI buttons for example. IsPointerOverGameObject really means IsPointerOver*UI*GameObject
+                // notice we don't use on on GetbuttonUp() few lines down, because one can mouse down, move over a UI element and release, which would lead to not lower the isFiring Flag.
+                if (EventSystem.current.IsPointerOverGameObject())
+                {
+                    //	return;
+                }
 
-		/// <summary>
-		/// MonoBehaviour method called after a new level of index 'level' was loaded.
-		/// We recreate the Player UI because it was destroy when we switched level.
-		/// Also reposition the player if outside the current arena.
-		/// </summary>
-		/// <param name="level">Level index loaded</param>
-		void OnLevelWasLoaded(int level)
-		{
-			// check if we are outside the Arena and if it's the case, spawn around the center of the arena in a safe zone
-			if (! Physics.Raycast(transform.position, -Vector3.up, 5f)) 
-			{
-				transform.position = new Vector3(0f,5f,0f);
-			}
+                if (!IsFiring)
+                {
+                    IsFiring = true;
+                }
+            }
 
-			GameObject _uiGo =  Instantiate(PlayerUiPrefab) as GameObject;
-			_uiGo.SendMessage ("SetTarget", this, SendMessageOptions.RequireReceiver);
-		}
+            if (Input.GetButtonUp("Fire1"))
+            {
+                if (IsFiring)
+                {
+                    IsFiring = false;
+                }
+            }
+        }
 
-		#endregion
+        #endregion Private Methods
 
-		#region Private Methods
-		/// <summary>
-		/// Processes the inputs. This MUST ONLY BE USED when the player has authority over this Networked GameObject (photonView.isMine == true)
-		/// </summary>
-		void ProcessInputs()
-		{
-			
-			if (Input.GetButtonDown ("Fire1") ) {
-				
-				// we don't want to fire when we interact with UI buttons for example. IsPointerOverGameObject really means IsPointerOver*UI*GameObject
-				// notice we don't use on on GetbuttonUp() few lines down, because one can mouse down, move over a UI element and release, which would lead to not lower the isFiring Flag.
-				if (EventSystem.current.IsPointerOverGameObject ()) {
-				//	return;
-				}
-				
-				if (!IsFiring)
-				{
-					IsFiring = true;
-				}
-			}
-			
-			if (Input.GetButtonUp ("Fire1") ) {
-				if (IsFiring)
-				{
-					IsFiring = false;
-				}
-			}
-		}
-		#endregion
+        /*
 
-		/*
 		#region IPunObservable implementation
 
 		void IPunObservable.OnPhotonSerializeView (PhotonStream stream, PhotonMessageInfo info)
@@ -236,27 +244,28 @@ namespace ExitGames.Demos.DemoAnimator
 			}
 		}
 
-		#endregion
+		#endregion IPunObservable implementation
+
 */
 
-		#region IPunObservable implementation
+        #region IPunObservable implementation
 
+        public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+        {
+            if (stream.isWriting)
+            {
+                // We own this player: send the others our data
+                stream.SendNext(IsFiring);
+                stream.SendNext(Health);
+            }
+            else
+            {
+                // Network player, receive data
+                this.IsFiring = (bool)stream.ReceiveNext();
+                this.Health = (float)stream.ReceiveNext();
+            }
+        }
 
-		public void OnPhotonSerializeView (PhotonStream stream, PhotonMessageInfo info)
-		{
-			if (stream.isWriting)
-			{
-				// We own this player: send the others our data
-				stream.SendNext(IsFiring);
-				stream.SendNext(Health);
-			}else{
-				// Network player, receive data
-				this.IsFiring = (bool)stream.ReceiveNext();
-				this.Health = (float)stream.ReceiveNext();
-			}
-		}
-
-		#endregion
-
-	}
+        #endregion IPunObservable implementation
+    }
 }

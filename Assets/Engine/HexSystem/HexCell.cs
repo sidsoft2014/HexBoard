@@ -16,6 +16,7 @@ public class HexCell : MonoBehaviour
             }
         }
     }
+
     public HexCoordinates coordinates;
     public Color color;
 
@@ -23,6 +24,7 @@ public class HexCell : MonoBehaviour
     {
         return string.Format("HexCell [{0},{1},{2}]", FullPosition.x, FullPosition.y, FullPosition.z);
     }
+
     public bool IsPosition(Vector3 pos)
     {
         var comp = HexCoordinates.FromPosition(pos);

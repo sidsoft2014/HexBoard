@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using UnityEngine;
-using System.Collections;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class PunPlayerScores : MonoBehaviour
@@ -34,7 +32,7 @@ public static class ScoreExtensions
         object score;
         if (player.customProperties.TryGetValue(PunPlayerScores.PlayerScoreProp, out score))
         {
-            return (int) score;
+            return (int)score;
         }
 
         return 0;

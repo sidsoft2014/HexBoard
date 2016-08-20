@@ -1,12 +1,12 @@
-﻿using UnityEngine;
-using Photon;
+﻿using Photon;
+using UnityEngine;
 
 /// <summary>Sample script that uses ColorPerPlayer to apply it to an object's material color.</summary>
 public class ColorPerPlayerApply : PunBehaviour
 {
     private ColorPerPlayer colorPicker;
 
-	private Renderer rendererComponent;
+    private Renderer rendererComponent;
 
     private void Awake()
     {
@@ -20,7 +20,7 @@ public class ColorPerPlayerApply : PunBehaviour
             enabled = false;
         }
 
-		rendererComponent = GetComponent<Renderer>();
+        rendererComponent = GetComponent<Renderer>();
     }
 
     public override void OnPhotonInstantiate(PhotonMessageInfo info)
@@ -34,7 +34,6 @@ public class ColorPerPlayerApply : PunBehaviour
         ApplyColor();
     }
 
-
     public void ApplyColor()
     {
         if (photonView.owner == null)
@@ -45,7 +44,7 @@ public class ColorPerPlayerApply : PunBehaviour
         if (photonView.owner.customProperties.ContainsKey(ColorPerPlayer.ColorProp))
         {
             int playersColorIndex = (int)photonView.owner.customProperties[ColorPerPlayer.ColorProp];
-			rendererComponent.material.color = this.colorPicker.Colors[playersColorIndex];
+            rendererComponent.material.color = this.colorPicker.Colors[playersColorIndex];
         }
     }
 }

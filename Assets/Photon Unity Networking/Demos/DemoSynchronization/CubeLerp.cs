@@ -9,21 +9,18 @@
 
 using UnityEngine;
 
-
-[RequireComponent(typeof (PhotonView))]
+[RequireComponent(typeof(PhotonView))]
 public class CubeLerp : Photon.MonoBehaviour, IPunObservable
 {
     private Vector3 latestCorrectPos;
     private Vector3 onUpdatePos;
     private float fraction;
 
-
     public void Start()
     {
         this.latestCorrectPos = transform.position;
         this.onUpdatePos = transform.position;
     }
-
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
@@ -51,12 +48,11 @@ public class CubeLerp : Photon.MonoBehaviour, IPunObservable
         }
     }
 
-
     public void Update()
     {
         if (this.photonView.isMine)
         {
-            return;     // if this object is under our control, we don't need to apply received position-updates 
+            return;     // if this object is under our control, we don't need to apply received position-updates
         }
 
         // We get 10 updates per sec. Sometimes a few less or one or two more, depending on variation of lag.
@@ -65,7 +61,7 @@ public class CubeLerp : Photon.MonoBehaviour, IPunObservable
         //
         // Lerp() gets a fraction value between 0 and 1. This is how far we went from A to B.
         //
-        // So in 100 ms, we want to move from our previous position to the latest known. 
+        // So in 100 ms, we want to move from our previous position to the latest known.
         // Our fraction variable should reach 1 in 100ms, so we should multiply deltaTime by 10.
         // We want it to take a bit longer, so we multiply with 9 instead!
 

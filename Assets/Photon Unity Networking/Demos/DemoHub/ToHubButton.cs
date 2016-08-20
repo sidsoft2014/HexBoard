@@ -14,7 +14,7 @@ public class ToHubButton : MonoBehaviour
         {
             if (instance == null)
             {
-                instance = FindObjectOfType(typeof (ToHubButton)) as ToHubButton;
+                instance = FindObjectOfType(typeof(ToHubButton)) as ToHubButton;
             }
 
             return instance;
@@ -44,11 +44,11 @@ public class ToHubButton : MonoBehaviour
     {
         bool sceneZeroLoaded = false;
 
-        #if UNITY_5 && !UNITY_5_0 && !UNITY_5_1 && !UNITY_5_2
+#if UNITY_5 && !UNITY_5_0 && !UNITY_5_1 && !UNITY_5_2
         sceneZeroLoaded = SceneManager.GetActiveScene().buildIndex == 0;
-        #else
+#else
         sceneZeroLoaded = Application.loadedLevel == 0;
-        #endif
+#endif
 
         if (!sceneZeroLoaded)
         {

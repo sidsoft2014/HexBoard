@@ -4,7 +4,7 @@
 // You can define how much time you voluntarily lag behind via InterpolationDelay.
 // This should be more than the lag.
 // This script will replay the movement of a cube, based on already received position updates.
-// 
+//
 // Network interpolation is affected by the network sendRate.
 // By default this is 10 times/second for OnSerialize. (See PhotonNetwork.sendIntervalOnSerialize)
 // Raise the sendrate if you want to lower the interpolationBackTime.
@@ -13,8 +13,7 @@
 using System;
 using UnityEngine;
 
-
-[RequireComponent(typeof (PhotonView))]
+[RequireComponent(typeof(PhotonView))]
 public class CubeInter : Photon.MonoBehaviour, IPunObservable
 {
     internal struct State
@@ -32,7 +31,6 @@ public class CubeInter : Photon.MonoBehaviour, IPunObservable
 
     public double InterpolationDelay = 0.15;
 
-    
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         // Always send transform (depending on reliability of the network view)
@@ -44,16 +42,15 @@ public class CubeInter : Photon.MonoBehaviour, IPunObservable
             stream.Serialize(ref rot);
             stream.SendNext(Environment.TickCount);
         }
-            // When receiving, buffer the information
+        // When receiving, buffer the information
         else
         {
-
             // Receive latest state information
             Vector3 pos = Vector3.zero;
             Quaternion rot = Quaternion.identity;
             stream.Serialize(ref pos);
-            stream.Serialize(ref rot);            
-            
+            stream.Serialize(ref rot);
+
             //int localTimeOfSend = (int)stream.ReceiveNext();
             //Debug.Log("timeDiff" + (Environment.TickCount - localTimeOfSend) + " update age: " + (PhotonNetwork.time - info.timestamp));
 
@@ -62,7 +59,6 @@ public class CubeInter : Photon.MonoBehaviour, IPunObservable
             {
                 this.m_BufferedState[i] = this.m_BufferedState[i - 1];
             }
-
 
             // Save currect received state as 0 in the buffer, safe to overwrite after shifting
             State state;
@@ -85,12 +81,11 @@ public class CubeInter : Photon.MonoBehaviour, IPunObservable
         }
     }
 
-
     public void Update()
     {
         if (this.photonView.isMine || !PhotonNetwork.inRoom)
         {
-            return;     // if this object is under our control, we don't need to apply received position-updates 
+            return;     // if this object is under our control, we don't need to apply received position-updates
         }
 
         double currentTime = PhotonNetwork.time;
@@ -116,11 +111,11 @@ public class CubeInter : Photon.MonoBehaviour, IPunObservable
                     // Use the time between the two slots to determine if interpolation is necessary
                     double diffBetweenUpdates = rhs.timestamp - lhs.timestamp;
                     float t = 0.0F;
-                    // As the time difference gets closer to 100 ms t gets closer to 1 in 
+                    // As the time difference gets closer to 100 ms t gets closer to 1 in
                     // which case rhs is only used
                     if (diffBetweenUpdates > 0.0001)
                     {
-                        t = (float)((interpolationTime - lhs.timestamp)/diffBetweenUpdates);
+                        t = (float)((interpolationTime - lhs.timestamp) / diffBetweenUpdates);
                     }
 
                     // if t=0 => lhs is used directly
@@ -138,7 +133,7 @@ public class CubeInter : Photon.MonoBehaviour, IPunObservable
             //Debug.Log("Lerping!");
             State latest = this.m_BufferedState[0];
 
-            transform.localPosition = Vector3.Lerp(transform.localPosition, latest.pos, Time.deltaTime*20);
+            transform.localPosition = Vector3.Lerp(transform.localPosition, latest.pos, Time.deltaTime * 20);
             transform.localRotation = latest.rot;
         }
     }

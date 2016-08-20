@@ -170,7 +170,7 @@ namespace ExitGames.Client.Photon
             {
                 if (this.ReportDebugOfLevel(DebugLevel.ERROR))
                 {
-                    this.Listener.DebugReturn(DebugLevel.ERROR, "Connect() to '" + this.ServerAddress + "' (" + ((ipAddress == null ) ? "": ipAddress.AddressFamily.ToString()) + ") failed: " + se.ToString());
+                    this.Listener.DebugReturn(DebugLevel.ERROR, "Connect() to '" + this.ServerAddress + "' (" + ((ipAddress == null) ? "" : ipAddress.AddressFamily.ToString()) + ") failed: " + se.ToString());
                 }
 
                 this.HandleException(StatusCode.SecurityExceptionOnConnect);
@@ -222,6 +222,6 @@ namespace ExitGames.Client.Photon
             this.Disconnect();
         }
     } //class
-
 }
+
 #endif

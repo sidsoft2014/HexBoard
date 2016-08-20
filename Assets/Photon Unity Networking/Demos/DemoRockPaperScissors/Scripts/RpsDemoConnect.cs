@@ -1,6 +1,5 @@
 ﻿using Photon;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class RpsDemoConnect : PunBehaviour
@@ -10,28 +9,26 @@ public class RpsDemoConnect : PunBehaviour
     public string previousRoom;
     private const string MainSceneName = "DemoRPS-Scene";
 
-	const string NickNamePlayerPrefsKey = "NickName";
+    private const string NickNamePlayerPrefsKey = "NickName";
 
-
-	void Start()
-	{
-		InputField.text = PlayerPrefs.HasKey(NickNamePlayerPrefsKey)?PlayerPrefs.GetString(NickNamePlayerPrefsKey):"";
-	}
+    private void Start()
+    {
+        InputField.text = PlayerPrefs.HasKey(NickNamePlayerPrefsKey) ? PlayerPrefs.GetString(NickNamePlayerPrefsKey) : "";
+    }
 
     public void ApplyUserIdAndConnect()
     {
-		string nickName = "DemoNick";
+        string nickName = "DemoNick";
         if (this.InputField != null && !string.IsNullOrEmpty(this.InputField.text))
         {
             nickName = this.InputField.text;
-			PlayerPrefs.SetString(NickNamePlayerPrefsKey,nickName);
+            PlayerPrefs.SetString(NickNamePlayerPrefsKey, nickName);
         }
         //if (string.IsNullOrEmpty(UserId))
         //{
         //    this.UserId = nickName + "ID";
         //}
-        Debug.Log("Nickname: " + nickName + " userID: " + this.UserId,this);
-
+        Debug.Log("Nickname: " + nickName + " userID: " + this.UserId, this);
 
         if (PhotonNetwork.AuthValues == null)
         {
@@ -44,18 +41,16 @@ public class RpsDemoConnect : PunBehaviour
 
         PhotonNetwork.playerName = nickName;
         PhotonNetwork.ConnectUsingSettings("0.5");
-        
+
         // this way we can force timeouts by pausing the client (in editor)
         PhotonHandler.StopFallbackSendAckThread();
     }
 
-
     public override void OnConnectedToMaster()
     {
-        // after connect 
+        // after connect
         this.UserId = PhotonNetwork.player.userId;
         ////Debug.Log("UserID " + this.UserId);
-
 
         // after timeout: re-join "old" room (if one is known)
         if (!string.IsNullOrEmpty(this.previousRoom))
@@ -83,9 +78,8 @@ public class RpsDemoConnect : PunBehaviour
 
     public override void OnJoinedRoom()
     {
-		Debug.Log("Joined room: " + PhotonNetwork.room.name);
+        Debug.Log("Joined room: " + PhotonNetwork.room.name);
         this.previousRoom = PhotonNetwork.room.name;
-
     }
 
     public override void OnPhotonJoinRoomFailed(object[] codeAndMsg)

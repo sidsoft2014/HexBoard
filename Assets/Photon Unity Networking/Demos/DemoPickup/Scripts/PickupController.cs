@@ -1,6 +1,4 @@
 using UnityEngine;
-using System.Collections;
-
 
 public enum PickupCharacterState
 {
@@ -14,7 +12,6 @@ public enum PickupCharacterState
 [RequireComponent(typeof(CharacterController))]
 public class PickupController : MonoBehaviour, IPunObservable
 {
-
     public AnimationClip idleAnimation;
     public AnimationClip walkAnimation;
     public AnimationClip runAnimation;
@@ -28,14 +25,14 @@ public class PickupController : MonoBehaviour, IPunObservable
 
     private Animation _animation;
 
-
-
     public PickupCharacterState _characterState;
 
     // The speed when walking
     public float walkSpeed = 2.0f;
+
     // after trotAfterSeconds of walking we trot with trotSpeed
     public float trotSpeed = 4.0f;
+
     // when pressing "Fire3" button (cmd) we start running
     public float runSpeed = 6.0f;
 
@@ -46,8 +43,10 @@ public class PickupController : MonoBehaviour, IPunObservable
 
     // The gravity for the character
     public float gravity = 20.0f;
+
     // The gravity in controlled descent mode
     public float speedSmoothing = 10.0f;
+
     public float rotateSpeed = 500.0f;
     public float trotAfterSeconds = 3.0f;
 
@@ -62,8 +61,10 @@ public class PickupController : MonoBehaviour, IPunObservable
 
     // The current move direction in x-z
     private Vector3 moveDirection = Vector3.zero;
+
     // The current vertical speed
     private float verticalSpeed = 0.0f;
+
     // The current x-z move speed
     private float moveSpeed = 0.0f;
 
@@ -72,24 +73,30 @@ public class PickupController : MonoBehaviour, IPunObservable
 
     // Are we jumping? (Initiated with jump button and not grounded yet)
     private bool jumping = false;
+
     private bool jumpingReachedApex = false;
 
     // Are we moving backwards (This locks the camera to not do a 180 degree spin)
     private bool movingBack = false;
+
     // Is the user pressing any keys?
     private bool isMoving = false;
+
     // When did the user start walking (Used for going into trot after a while)
     private float walkTimeStart = 0.0f;
+
     // Last time the jump button was clicked down
     private float lastJumpButtonTime = -10.0f;
+
     // Last time we performed a jump
     private float lastJumpTime = -1.0f;
+
     // the height we jumped from (Used to determine for how long to apply extra jump power after jumping.)
     //private float lastJumpStartHeight = 0.0f;
     private Vector3 inAirVelocity = Vector3.zero;
 
     private float lastGroundedTime = 0.0f;
-    Vector3 velocity = Vector3.zero;
+    private Vector3 velocity = Vector3.zero;
     private Vector3 lastPos;
     private Vector3 remotePosition;
 
@@ -98,7 +105,7 @@ public class PickupController : MonoBehaviour, IPunObservable
     public float RemoteSmoothing = 5;
     public bool AssignAsTagObject = true;
 
-    void Awake()
+    private void Awake()
     {
         // PUN: automatically determine isControllable, if this GO has a PhotonView
         PhotonView pv = this.gameObject.GetComponent<PhotonView>();
@@ -118,7 +125,6 @@ public class PickupController : MonoBehaviour, IPunObservable
                 pv.onSerializeTransformOption = OnSerializeTransform.OnlyPosition;
             }
         }
-
 
         moveDirection = transform.TransformDirection(Vector3.forward);
 
@@ -148,8 +154,8 @@ public class PickupController : MonoBehaviour, IPunObservable
         }
     }
 
-    void Update()
-    {        
+    private void Update()
+    {
         if (isControllable)
         {
             if (Input.GetButtonDown("Jump"))
@@ -167,7 +173,6 @@ public class PickupController : MonoBehaviour, IPunObservable
             // Apply jumping logic
             ApplyJumping();
 
-
             // Calculate actual motion
             Vector3 movement = moveDirection * moveSpeed + new Vector3(0, verticalSpeed, 0) + inAirVelocity;
             movement *= Time.deltaTime;
@@ -177,7 +182,6 @@ public class PickupController : MonoBehaviour, IPunObservable
             // Move the controller
             CharacterController controller = GetComponent<CharacterController>();
             collisionFlags = controller.Move(movement);
-
         }
 
         // PUN: if a remote position is known, we smooth-move to it (being late(r) but smoother)
@@ -186,7 +190,7 @@ public class PickupController : MonoBehaviour, IPunObservable
             transform.position = Vector3.Lerp(transform.position, this.remotePosition, Time.deltaTime * this.RemoteSmoothing);
         }
 
-        velocity = (transform.position - lastPos)*25;
+        velocity = (transform.position - lastPos) * 25;
 
         // ANIMATION sector
         if (_animation)
@@ -239,7 +243,7 @@ public class PickupController : MonoBehaviour, IPunObservable
                     }
                     _animation.CrossFade(walkAnimation.name);
                 }
-                
+
                 if (_characterState != PickupCharacterState.Running)
                 {
                     _animation[runAnimation.name].time = 0.0f;
@@ -293,7 +297,7 @@ public class PickupController : MonoBehaviour, IPunObservable
         else
         {
             bool initialRemotePosition = (remotePosition == Vector3.zero);
-            
+
             remotePosition = (Vector3)stream.ReceiveNext();
             this._characterState = (PickupCharacterState)((byte)stream.ReceiveNext());
 
@@ -305,12 +309,12 @@ public class PickupController : MonoBehaviour, IPunObservable
         }
     }
 
-    void UpdateSmoothedMovementDirection()
+    private void UpdateSmoothedMovementDirection()
     {
         Transform cameraTransform = Camera.main.transform;
         bool grounded = IsGrounded();
 
-        // Forward vector relative to the camera along the x-z plane	
+        // Forward vector relative to the camera along the x-z plane
         Vector3 forward = cameraTransform.TransformDirection(Vector3.forward);
         forward.y = 0;
         forward = forward.normalized;
@@ -387,7 +391,7 @@ public class PickupController : MonoBehaviour, IPunObservable
                 targetSpeed *= walkSpeed;
                 _characterState = PickupCharacterState.Walking;
             }
-        
+
             moveSpeed = Mathf.Lerp(moveSpeed, targetSpeed, curSmooth);
 
             // Reset walk time start when we slow down
@@ -406,7 +410,7 @@ public class PickupController : MonoBehaviour, IPunObservable
         }
     }
 
-    void ApplyJumping()
+    private void ApplyJumping()
     {
         // Prevent jumping too fast after each other
         if (lastJumpTime + jumpRepeatTime > Time.time)
@@ -416,7 +420,7 @@ public class PickupController : MonoBehaviour, IPunObservable
         {
             // Jump
             // - Only when pressing the button down
-            // - With a timeout so you can press the button slightly before landing		
+            // - With a timeout so you can press the button slightly before landing
             if (canJump && Time.time < lastJumpButtonTime + jumpTimeout)
             {
                 verticalSpeed = CalculateJumpVerticalSpeed(jumpHeight);
@@ -425,13 +429,13 @@ public class PickupController : MonoBehaviour, IPunObservable
         }
     }
 
-    void ApplyGravity()
+    private void ApplyGravity()
     {
         if (isControllable)	// don't move player at all if not controllable.
         {
             // Apply gravity
             //bool jumpButton = Input.GetButton("Jump");
-            
+
             // When we reach the apex of the jump we send out a message
             if (jumping && !jumpingReachedApex && verticalSpeed <= 0.0f)
             {
@@ -446,14 +450,14 @@ public class PickupController : MonoBehaviour, IPunObservable
         }
     }
 
-    float CalculateJumpVerticalSpeed(float targetJumpHeight)
+    private float CalculateJumpVerticalSpeed(float targetJumpHeight)
     {
-        // From the jump height and gravity we deduce the upwards speed 
+        // From the jump height and gravity we deduce the upwards speed
         // for the character to reach at the apex.
         return Mathf.Sqrt(2 * targetJumpHeight * gravity);
     }
 
-    void DidJump()
+    private void DidJump()
     {
         jumping = true;
         jumpingReachedApex = false;
@@ -464,7 +468,7 @@ public class PickupController : MonoBehaviour, IPunObservable
         _characterState = PickupCharacterState.Jumping;
     }
 
-    void OnControllerColliderHit(ControllerColliderHit hit)
+    private void OnControllerColliderHit(ControllerColliderHit hit)
     {
         //	Debug.DrawRay(hit.point, hit.normal);
         if (hit.moveDirection.y > 0.01f)

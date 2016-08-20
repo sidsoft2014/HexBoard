@@ -39,7 +39,6 @@ namespace ExitGames.Client.Photon.Chat
         /// <summary>Count of messages this client still buffers/knows for this channel.</summary>
         public int MessageCount { get { return this.Messages.Count; } }
 
-
         /// <summary>Used internally to create new channels. This does NOT create a channel on the server! Use ChatClient.Subscribe.</summary>
         public ChatChannel(string name)
         {

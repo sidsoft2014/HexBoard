@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 
-
 [RequireComponent(typeof(ChatGui))]
 public class NamePickGui : MonoBehaviour
 {
@@ -14,13 +13,13 @@ public class NamePickGui : MonoBehaviour
 
     public void Awake()
     {
-        this.guiCenteredRect = new Rect(Screen.width/2-GuiSize.x/2, Screen.height/2-GuiSize.y/4, GuiSize.x, GuiSize.y);
+        this.guiCenteredRect = new Rect(Screen.width / 2 - GuiSize.x / 2, Screen.height / 2 - GuiSize.y / 4, GuiSize.x, GuiSize.y);
         this.chatComponent = this.GetComponent<ChatGui>();
 
         if (this.chatComponent != null && chatComponent.enabled)
         {
             Debug.LogWarning("When using the NamePickGui, ChatGui should be disabled initially.");
-            
+
             if (this.chatComponent.chatClient != null)
             {
                 this.chatComponent.chatClient.Disconnect();
@@ -34,7 +33,7 @@ public class NamePickGui : MonoBehaviour
             this.InputLine = prefsName;
         }
     }
-    
+
     public void OnGUI()
     {
         // Enter-Key handling:
@@ -47,10 +46,8 @@ public class NamePickGui : MonoBehaviour
             }
         }
 
-
         GUI.skin.label.wordWrap = true;
         GUILayout.BeginArea(guiCenteredRect);
-
 
         if (this.chatComponent != null && string.IsNullOrEmpty(this.chatComponent.ChatAppId))
         {
@@ -75,7 +72,6 @@ public class NamePickGui : MonoBehaviour
         GUILayout.EndHorizontal();
 
         GUILayout.EndArea();
-
 
         GUI.FocusControl("NameInput");
     }

@@ -7,7 +7,7 @@
 // </summary>
 // <author>developer@exitgames.com</author>
 // ----------------------------------------------------------------------------
- 
+
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -20,8 +20,8 @@ using UnityEngine;
 /// When Using Trigger Parameters, make sure the component that sets the trigger is higher in the stack of Components on the GameObject than 'PhotonAnimatorView'
 /// Triggers are raised true during one frame only.
 /// </remarks>
-[RequireComponent(typeof (Animator))]
-[RequireComponent(typeof (PhotonView))]
+[RequireComponent(typeof(Animator))]
+[RequireComponent(typeof(PhotonView))]
 [AddComponentMenu("Photon Networking/Photon Animator View")]
 public class PhotonAnimatorView : MonoBehaviour
 {
@@ -57,7 +57,7 @@ public class PhotonAnimatorView : MonoBehaviour
         public int LayerIndex;
     }
 
-    #endregion
+    #endregion Enums
 
     #region Properties
 
@@ -65,7 +65,7 @@ public class PhotonAnimatorView : MonoBehaviour
     public PhotonAnimatorView ReceivingSender;
 #endif
 
-    #endregion
+    #endregion Properties
 
     #region Members
 
@@ -73,9 +73,10 @@ public class PhotonAnimatorView : MonoBehaviour
 
     private PhotonStreamQueue m_StreamQueue;
 
-    //These fields are only used in the CustomEditor for this script and would trigger a 
+    //These fields are only used in the CustomEditor for this script and would trigger a
     //"this variable is never used" warning, which I am suppressing here
 #pragma warning disable 0414
+
     [HideInInspector]
     [SerializeField]
     private bool ShowLayerWeightsInspector = true;
@@ -83,6 +84,7 @@ public class PhotonAnimatorView : MonoBehaviour
     [HideInInspector]
     [SerializeField]
     private bool ShowParameterInspector = true;
+
 #pragma warning restore 0414
 
     [HideInInspector]
@@ -98,13 +100,13 @@ public class PhotonAnimatorView : MonoBehaviour
     private bool m_WasSynchronizeTypeChanged = true;
     private PhotonView m_PhotonView;
 
-	/// <summary>
-	/// Cached raised triggers that are set to be synchronized in discrete mode. since a Trigger only stay up for less than a frame,
-	/// We need to cache it until the next discrete serialization call.
-	/// </summary>
-	List<string> m_raisedDiscreteTriggersCache = new List<string>();
+    /// <summary>
+    /// Cached raised triggers that are set to be synchronized in discrete mode. since a Trigger only stay up for less than a frame,
+    /// We need to cache it until the next discrete serialization call.
+    /// </summary>
+    private List<string> m_raisedDiscreteTriggersCache = new List<string>();
 
-    #endregion
+    #endregion Members
 
     #region Unity
 
@@ -118,7 +120,7 @@ public class PhotonAnimatorView : MonoBehaviour
 
     private void Update()
     {
-		if (this.m_Animator.applyRootMotion && this.m_PhotonView.isMine == false && PhotonNetwork.connected == true)
+        if (this.m_Animator.applyRootMotion && this.m_PhotonView.isMine == false && PhotonNetwork.connected == true)
         {
             this.m_Animator.applyRootMotion = false;
         }
@@ -133,7 +135,7 @@ public class PhotonAnimatorView : MonoBehaviour
         {
             SerializeDataContinuously();
 
-			CacheDiscreteTriggers();
+            CacheDiscreteTriggers();
         }
         else
         {
@@ -141,30 +143,29 @@ public class PhotonAnimatorView : MonoBehaviour
         }
     }
 
-    #endregion
+    #endregion Unity
 
     #region Setup Synchronizing Methods
 
+    /// <summary>
+    /// Caches the discrete triggers values for keeping track of raised triggers, and will be reseted after the sync routine got performed
+    /// </summary>
+    public void CacheDiscreteTriggers()
+    {
+        for (int i = 0; i < this.m_SynchronizeParameters.Count; ++i)
+        {
+            SynchronizedParameter parameter = this.m_SynchronizeParameters[i];
 
-	/// <summary>
-	/// Caches the discrete triggers values for keeping track of raised triggers, and will be reseted after the sync routine got performed
-	/// </summary>
-	public void CacheDiscreteTriggers()
-	{
-		for (int i = 0; i < this.m_SynchronizeParameters.Count; ++i)
-		{
-			SynchronizedParameter parameter = this.m_SynchronizeParameters[i];
-			
-			if (parameter.SynchronizeType == SynchronizeType.Discrete && parameter.Type == ParameterType.Trigger && this.m_Animator.GetBool(parameter.Name))
-			{
-				if (parameter.Type ==  ParameterType.Trigger)
-				{
-					m_raisedDiscreteTriggersCache.Add(parameter.Name);
-					break;
-				}
-			}
-		}
-	}
+            if (parameter.SynchronizeType == SynchronizeType.Discrete && parameter.Type == ParameterType.Trigger && this.m_Animator.GetBool(parameter.Name))
+            {
+                if (parameter.Type == ParameterType.Trigger)
+                {
+                    m_raisedDiscreteTriggersCache.Add(parameter.Name);
+                    break;
+                }
+            }
+        }
+    }
 
     /// <summary>
     /// Check if a specific layer is configured to be synchronize
@@ -254,7 +255,7 @@ public class PhotonAnimatorView : MonoBehaviour
 
         if (index == -1)
         {
-            this.m_SynchronizeLayers.Add(new SynchronizedLayer {LayerIndex = layerIndex, SynchronizeType = synchronizeType});
+            this.m_SynchronizeLayers.Add(new SynchronizedLayer { LayerIndex = layerIndex, SynchronizeType = synchronizeType });
         }
         else
         {
@@ -279,7 +280,7 @@ public class PhotonAnimatorView : MonoBehaviour
 
         if (index == -1)
         {
-            this.m_SynchronizeParameters.Add(new SynchronizedParameter {Name = name, Type = type, SynchronizeType = synchronizeType});
+            this.m_SynchronizeParameters.Add(new SynchronizedParameter { Name = name, Type = type, SynchronizeType = synchronizeType });
         }
         else
         {
@@ -287,7 +288,7 @@ public class PhotonAnimatorView : MonoBehaviour
         }
     }
 
-    #endregion
+    #endregion Setup Synchronizing Methods
 
     #region Serialization
 
@@ -317,20 +318,22 @@ public class PhotonAnimatorView : MonoBehaviour
                     case ParameterType.Bool:
                         this.m_StreamQueue.SendNext(this.m_Animator.GetBool(parameter.Name));
                         break;
+
                     case ParameterType.Float:
                         this.m_StreamQueue.SendNext(this.m_Animator.GetFloat(parameter.Name));
                         break;
+
                     case ParameterType.Int:
                         this.m_StreamQueue.SendNext(this.m_Animator.GetInteger(parameter.Name));
                         break;
+
                     case ParameterType.Trigger:
-						this.m_StreamQueue.SendNext(this.m_Animator.GetBool(parameter.Name));
-						break;
-				}
+                        this.m_StreamQueue.SendNext(this.m_Animator.GetBool(parameter.Name));
+                        break;
+                }
             }
         }
     }
-
 
     private void DeserializeDataContinuously()
     {
@@ -358,14 +361,17 @@ public class PhotonAnimatorView : MonoBehaviour
                     case ParameterType.Bool:
                         this.m_Animator.SetBool(parameter.Name, (bool)this.m_StreamQueue.ReceiveNext());
                         break;
+
                     case ParameterType.Float:
                         this.m_Animator.SetFloat(parameter.Name, (float)this.m_StreamQueue.ReceiveNext());
                         break;
+
                     case ParameterType.Int:
                         this.m_Animator.SetInteger(parameter.Name, (int)this.m_StreamQueue.ReceiveNext());
                         break;
+
                     case ParameterType.Trigger:
-						this.m_Animator.SetBool(parameter.Name, (bool)this.m_StreamQueue.ReceiveNext());
+                        this.m_Animator.SetBool(parameter.Name, (bool)this.m_StreamQueue.ReceiveNext());
                         break;
                 }
             }
@@ -393,22 +399,25 @@ public class PhotonAnimatorView : MonoBehaviour
                     case ParameterType.Bool:
                         stream.SendNext(this.m_Animator.GetBool(parameter.Name));
                         break;
+
                     case ParameterType.Float:
                         stream.SendNext(this.m_Animator.GetFloat(parameter.Name));
                         break;
+
                     case ParameterType.Int:
                         stream.SendNext(this.m_Animator.GetInteger(parameter.Name));
                         break;
+
                     case ParameterType.Trigger:
-						// here we can't rely on the current real state of the trigger, we might have missed its raise
-						stream.SendNext(this.m_raisedDiscreteTriggersCache.Contains(parameter.Name));
-						break;
+                        // here we can't rely on the current real state of the trigger, we might have missed its raise
+                        stream.SendNext(this.m_raisedDiscreteTriggersCache.Contains(parameter.Name));
+                        break;
                 }
             }
         }
 
-		// reset the cache, we've synchronized.
-		this.m_raisedDiscreteTriggersCache.Clear();
+        // reset the cache, we've synchronized.
+        this.m_raisedDiscreteTriggersCache.Clear();
     }
 
     private void DeserializeDataDiscretly(PhotonStream stream)
@@ -436,6 +445,7 @@ public class PhotonAnimatorView : MonoBehaviour
                         }
                         this.m_Animator.SetBool(parameter.Name, (bool)stream.ReceiveNext());
                         break;
+
                     case ParameterType.Float:
                         if (stream.PeekNext() is float == false)
                         {
@@ -444,6 +454,7 @@ public class PhotonAnimatorView : MonoBehaviour
 
                         this.m_Animator.SetFloat(parameter.Name, (float)stream.ReceiveNext());
                         break;
+
                     case ParameterType.Int:
                         if (stream.PeekNext() is int == false)
                         {
@@ -452,16 +463,17 @@ public class PhotonAnimatorView : MonoBehaviour
 
                         this.m_Animator.SetInteger(parameter.Name, (int)stream.ReceiveNext());
                         break;
-		            case ParameterType.Trigger:
-							if (stream.PeekNext() is bool == false)
-							{
-								return;
-							}
 
-							if ((bool)stream.ReceiveNext())
-							  	{
-								this.m_Animator.SetTrigger(parameter.Name);
-							}
+                    case ParameterType.Trigger:
+                        if (stream.PeekNext() is bool == false)
+                        {
+                            return;
+                        }
+
+                        if ((bool)stream.ReceiveNext())
+                        {
+                            this.m_Animator.SetTrigger(parameter.Name);
+                        }
                         break;
                 }
             }
@@ -541,5 +553,5 @@ public class PhotonAnimatorView : MonoBehaviour
         }
     }
 
-    #endregion
+    #endregion Serialization
 }

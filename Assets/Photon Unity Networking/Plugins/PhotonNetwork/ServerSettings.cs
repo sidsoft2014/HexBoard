@@ -3,12 +3,10 @@
 /// <summary>ScriptableObject defining a server setup. An instance is created as <b>PhotonServerSettings</b>.</summary>
 #pragma warning restore 1587
 
-
+using ExitGames.Client.Photon;
 using System;
 using System.Collections.Generic;
-using ExitGames.Client.Photon;
 using UnityEngine;
-
 
 public class Region
 {
@@ -48,7 +46,6 @@ public class Region
     }
 }
 
-
 /// <summary>
 /// Collection of connection-relevant settings, used internally by PhotonNetwork.ConnectUsingSettings.
 /// </summary>
@@ -56,11 +53,13 @@ public class Region
 public class ServerSettings : ScriptableObject
 {
     public enum HostingOption { NotSet = 0, PhotonCloud = 1, SelfHosted = 2, OfflineMode = 3, BestRegion = 4 }
+
     public HostingOption HostType = HostingOption.NotSet;
     public ConnectionProtocol Protocol = ConnectionProtocol.Udp;
 
     // custom server values (not used for PhotonCloud)
     public string ServerAddress = "";     // the address to be used (including region-suffix)
+
     public int ServerPort = 5055;
 
     public string AppID = "";
@@ -74,7 +73,6 @@ public class ServerSettings : ScriptableObject
 
     [HideInInspector]
     public bool DisableAutoOpenWizard;
-
 
     public void UseCloudBestRegion(string cloudAppid)
     {

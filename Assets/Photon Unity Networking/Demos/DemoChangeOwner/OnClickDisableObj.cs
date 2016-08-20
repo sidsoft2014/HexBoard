@@ -1,10 +1,9 @@
 ﻿using UnityEngine;
-using System.Collections;
 
-public class OnClickDisableObj : MonoBehaviour {
-
-	
-	void OnClick() {
-	    this.gameObject.SetActive(false);
-	}
-	}
+public class OnClickDisableObj : MonoBehaviour
+{
+    private void OnClick()
+    {
+        this.gameObject.SetActive(false);
+    }
+}

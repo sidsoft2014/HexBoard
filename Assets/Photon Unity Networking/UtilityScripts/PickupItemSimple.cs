@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections;
 
 /// <summary>
 /// Makes a scene object pickup-able. Needs a PhotonView which belongs to the scene.
@@ -31,7 +30,7 @@ public class PickupItemSimple : Photon.MonoBehaviour
             // skip sending more pickups until the original pickup-RPC got back to this client
             return;
         }
-        
+
         this.SentPickup = true;
         this.photonView.RPC("PunPickupSimple", PhotonTargets.AllViaServer);
     }
@@ -60,7 +59,6 @@ public class PickupItemSimple : Photon.MonoBehaviour
             Debug.Log("Ignored PU RPC, cause item is inactive. " + this.gameObject);
             return;
         }
-        
 
         // how long it is until this item respanws, depends on the pickup time and the respawn time
         double timeSinceRpcCall = (PhotonNetwork.time - msgInfo.timestamp);
@@ -69,7 +67,7 @@ public class PickupItemSimple : Photon.MonoBehaviour
 
         if (timeUntilRespawn > 0)
         {
-            // this script simply disables the GO for a while until it respawns. 
+            // this script simply disables the GO for a while until it respawns.
             this.gameObject.SetActive(false);
             Invoke("RespawnAfter", timeUntilRespawn);
         }

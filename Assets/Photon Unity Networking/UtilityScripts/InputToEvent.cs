@@ -73,7 +73,6 @@ public class InputToEvent : MonoBehaviour
         }
     }
 
-
     private void Press(Vector2 screenPos)
     {
         this.pressedPosition = screenPos;

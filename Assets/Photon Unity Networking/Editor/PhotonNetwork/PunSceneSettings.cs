@@ -13,12 +13,14 @@ public class SceneSetting
 
 public class PunSceneSettings : ScriptableObject
 {
-    [SerializeField] public List<SceneSetting> MinViewIdPerScene = new List<SceneSetting>();
+    [SerializeField]
+    public List<SceneSetting> MinViewIdPerScene = new List<SceneSetting>();
 
     private const string SceneSettingsFileName = "PunSceneSettingsFile.asset";
 
     // we use the path to PunSceneSettings.cs as path to create a scene settings file
     private static string punSceneSettingsCsPath;
+
     public static string PunSceneSettingsCsPath
     {
         get
@@ -44,8 +46,8 @@ public class PunSceneSettings : ScriptableObject
         }
     }
 
-
     private static PunSceneSettings instanceField;
+
     public static PunSceneSettings Instance
     {
         get
@@ -65,7 +67,6 @@ public class PunSceneSettings : ScriptableObject
             return instanceField;
         }
     }
-
 
     public static int MinViewIdForScene(string scene)
     {

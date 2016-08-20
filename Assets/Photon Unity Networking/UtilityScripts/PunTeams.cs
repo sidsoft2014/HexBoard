@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using ExitGames.Client.Photon;
 using UnityEngine;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
-
 
 /// <summary>
 /// Implements teams in a room/game with help of player properties. Access them by PhotonPlayer.GetTeam extension.
@@ -15,34 +13,31 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 public class PunTeams : MonoBehaviour
 {
     /// <summary>Enum defining the teams available. First team should be neutral (it's the default value any field of this enum gets).</summary>
-    public enum Team : byte {none, red, blue};
+    public enum Team : byte { none, red, blue };
 
     /// <summary>The main list of teams with their player-lists. Automatically kept up to date.</summary>
     /// <remarks>Note that this is static. Can be accessed by PunTeam.PlayersPerTeam. You should not modify this.</remarks>
     public static Dictionary<Team, List<PhotonPlayer>> PlayersPerTeam;
-    
+
     /// <summary>Defines the player custom property name to use for team affinity of "this" player.</summary>
     public const string TeamPlayerProp = "team";
-
 
     #region Events by Unity and Photon
 
     public void Start()
     {
         PlayersPerTeam = new Dictionary<Team, List<PhotonPlayer>>();
-        Array enumVals = Enum.GetValues(typeof (Team));
+        Array enumVals = Enum.GetValues(typeof(Team));
         foreach (var enumVal in enumVals)
         {
             PlayersPerTeam[(Team)enumVal] = new List<PhotonPlayer>();
         }
     }
 
-
     /// <summary>Needed to update the team lists when joining a room.</summary>
     /// <remarks>Called by PUN. See enum PhotonNetworkingMessage for an explanation.</remarks>
     public void OnJoinedRoom()
     {
-        
         this.UpdateTeams();
     }
 
@@ -52,9 +47,8 @@ public class PunTeams : MonoBehaviour
     {
         this.UpdateTeams();
     }
-    
-    #endregion
-    
+
+    #endregion Events by Unity and Photon
 
     public void UpdateTeams()
     {
@@ -103,7 +97,7 @@ public static class TeamExtensions
         PunTeams.Team currentTeam = PhotonNetwork.player.GetTeam();
         if (currentTeam != team)
         {
-            PhotonNetwork.player.SetCustomProperties(new Hashtable() {{PunTeams.TeamPlayerProp, (byte) team}});
+            PhotonNetwork.player.SetCustomProperties(new Hashtable() { { PunTeams.TeamPlayerProp, (byte)team } });
         }
     }
 }

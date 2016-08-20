@@ -9,7 +9,6 @@
 // ----------------------------------------------------------------------------
 
 using UnityEngine;
-using System.Collections;
 
 /// <summary>
 /// This class helps you to synchronize the velocities of a 2d physics RigidBody.
@@ -21,46 +20,46 @@ using System.Collections;
 /// Simply add the component to your GameObject and make sure that
 /// the PhotonRigidbody2DView is added to the list of observed components
 /// </summary>
-[RequireComponent( typeof( PhotonView ) )]
-[RequireComponent( typeof( Rigidbody2D ) )]
+[RequireComponent(typeof(PhotonView))]
+[RequireComponent(typeof(Rigidbody2D))]
 [AddComponentMenu("Photon Networking/Photon Rigidbody 2D View")]
-public class PhotonRigidbody2DView : MonoBehaviour 
+public class PhotonRigidbody2DView : MonoBehaviour
 {
     [SerializeField]
-    bool m_SynchronizeVelocity = true;
+    private bool m_SynchronizeVelocity = true;
 
     [SerializeField]
-    bool m_SynchronizeAngularVelocity = true;
+    private bool m_SynchronizeAngularVelocity = true;
 
-    Rigidbody2D m_Body;
+    private Rigidbody2D m_Body;
 
-    void Awake() 
+    private void Awake()
     {
         m_Body = GetComponent<Rigidbody2D>();
     }
 
-    void OnPhotonSerializeView( PhotonStream stream, PhotonMessageInfo info )
+    private void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
-        if( stream.isWriting == true )
+        if (stream.isWriting == true)
         {
-            if( m_SynchronizeVelocity == true )
+            if (m_SynchronizeVelocity == true)
             {
-                stream.SendNext( m_Body.velocity );
+                stream.SendNext(m_Body.velocity);
             }
 
-            if( m_SynchronizeAngularVelocity == true )
+            if (m_SynchronizeAngularVelocity == true)
             {
-                stream.SendNext( m_Body.angularVelocity );
+                stream.SendNext(m_Body.angularVelocity);
             }
         }
         else
         {
-            if( m_SynchronizeVelocity == true )
+            if (m_SynchronizeVelocity == true)
             {
                 m_Body.velocity = (Vector2)stream.ReceiveNext();
             }
 
-            if( m_SynchronizeAngularVelocity == true )
+            if (m_SynchronizeAngularVelocity == true)
             {
                 m_Body.angularVelocity = (float)stream.ReceiveNext();
             }

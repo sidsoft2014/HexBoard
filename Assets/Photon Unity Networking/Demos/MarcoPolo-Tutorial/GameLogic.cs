@@ -1,9 +1,7 @@
 using UnityEngine;
-using System.Collections;
 
 public class GameLogic : MonoBehaviour
 {
-
     public static int playerWhoIsIt = 0;
     private static PhotonView ScenePhotonView;
 

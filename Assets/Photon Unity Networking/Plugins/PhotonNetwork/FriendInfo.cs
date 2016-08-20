@@ -8,7 +8,6 @@
 // <author>developer@photonengine.com</author>
 // ----------------------------------------------------------------------------
 
-
 /// <summary>
 /// Used to store info about a friend's online state and in which room he/she is.
 /// </summary>

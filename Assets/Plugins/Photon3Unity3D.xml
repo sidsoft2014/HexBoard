@@ -90,7 +90,7 @@
         </member>
         <member name="T:ExitGames.Client.Photon.StatusCode">
             <summary>
-            Enumeration of situations that change the peers internal status. 
+            Enumeration of situations that change the peers internal status.
             Used in calls to OnStatusChanged to inform your application of various situations that might happen.
             </summary>
             <remarks>
@@ -98,16 +98,16 @@
             </remarks>
         </member>
         <member name="F:ExitGames.Client.Photon.StatusCode.Connect">
-            <summary>the PhotonPeer is connected.<br/>See {@link PhotonListener#OnStatusChanged}*</summary>
+            <summary>the PhotonPeer is connected.<br />See {@link PhotonListener#OnStatusChanged}*</summary>
         </member>
         <member name="F:ExitGames.Client.Photon.StatusCode.Disconnect">
-            <summary>the PhotonPeer just disconnected.<br/>See {@link PhotonListener#OnStatusChanged}*</summary>
+            <summary>the PhotonPeer just disconnected.<br />See {@link PhotonListener#OnStatusChanged}*</summary>
         </member>
         <member name="F:ExitGames.Client.Photon.StatusCode.Exception">
-            <summary>the PhotonPeer encountered an exception and will disconnect, too.<br/>See {@link PhotonListener#OnStatusChanged}*</summary>
+            <summary>the PhotonPeer encountered an exception and will disconnect, too.<br />See {@link PhotonListener#OnStatusChanged}*</summary>
         </member>
         <member name="F:ExitGames.Client.Photon.StatusCode.ExceptionOnConnect">
-            <summary>the PhotonPeer encountered an exception while opening the incoming connection to the server. The server could be down / not running or the client has no network or a misconfigured DNS.<br/>See {@link PhotonListener#OnStatusChanged}*</summary>
+            <summary>the PhotonPeer encountered an exception while opening the incoming connection to the server. The server could be down / not running or the client has no network or a misconfigured DNS.<br />See {@link PhotonListener#OnStatusChanged}*</summary>
         </member>
         <member name="F:ExitGames.Client.Photon.StatusCode.SecurityExceptionOnConnect">
             <summary>Used on platforms that throw a security exception on connect. Unity3d does this, e.g., if a webplayer build could not fetch a policy-file from a remote server.</summary>
@@ -182,11 +182,11 @@
             <summary>
             Provides textual descriptions for various error conditions and noteworthy situations.
             In cases where the application needs to react, a call to OnStatusChanged is used.
-            OnStatusChanged gives "feedback" to the game, DebugReturn provies human readable messages 
+            OnStatusChanged gives "feedback" to the game, DebugReturn provies human readable messages
             on the background.
             </summary>
             <remarks>
-            All debug output of the library will be reported through this method. Print it or put it in a 
+            All debug output of the library will be reported through this method. Print it or put it in a
             buffer to use it on-screen. Use PhotonPeer.DebugOut to select how verbose the output is.
             </remarks>
             <param name="level">DebugLevel (severity) of the message.</param>
@@ -197,35 +197,35 @@
             Callback method which gives you (async) responses for called operations.
             </summary>
             <remarks>
-            Similar to method-calling, operations can have a result. 
-            Because operation-calls are non-blocking and executed on the server, responses are provided 
+            Similar to method-calling, operations can have a result.
+            Because operation-calls are non-blocking and executed on the server, responses are provided
             after a roundtrip as call to this method.
-            
+
             Example: Trying to create a room usually succeeds but can fail if the room's name is already
             in use (room names are their IDs).
-            
-            This method is used as general callback for all operations. Each response corresponds to a certain 
+
+            This method is used as general callback for all operations. Each response corresponds to a certain
             &quot;type&quot; of operation by its OperationCode (see: <see cref="!:Operations" />).
             <para></para>
             </remarks>
             <example>
-            When you join a room, the server will assign a consecutive number to each client: the 
-            &quot;actorNr&quot; or &quot;player number&quot;. This is sent back in the OperationResult's 
+            When you join a room, the server will assign a consecutive number to each client: the
+            &quot;actorNr&quot; or &quot;player number&quot;. This is sent back in the OperationResult's
             Parameters as value of key <see cref="!:EventCode.ActorNr" />.<para></para>
-            
+
             Fetch your actorNr of a Join response like this:<para></para>
             <c>int actorNr = (int)operationResponse[(byte)OperationCode.ActorNr];</c>
             </example>
-            <param name="operationResponse">The response to an operation\-call.</param>                                                          
+            <param name="operationResponse">The response to an operation\-call.</param>
         </member>
         <member name="M:ExitGames.Client.Photon.IPhotonPeerListener.OnStatusChanged(ExitGames.Client.Photon.StatusCode)">
             <summary>
             OnStatusChanged is called to let the game know when asyncronous actions finished or when errors happen.
             </summary>
             <remarks>
-            Not all of the many StatusCode values will apply to your game. Example: If you don't use encryption, 
+            Not all of the many StatusCode values will apply to your game. Example: If you don't use encryption,
             the respective status changes are never made.
-            
+
             The values are all part of the StatusCode enumeration and described value-by-value.
             </remarks>
             <param name="statusCode">A code to identify the situation.</param>
@@ -235,21 +235,21 @@
             Called whenever an event from the Photon Server is dispatched.
             </summary>
             <remarks>
-            Events are used for communication between clients and allow the server to update clients over time. 
-            The creation of an event is often triggered by an operation (called by this client or an other). 
-            
+            Events are used for communication between clients and allow the server to update clients over time.
+            The creation of an event is often triggered by an operation (called by this client or an other).
+
             Each event carries its specific content in its Parameters. Your application knows which content to
             expect by checking the event's 'type', given by the event's Code.
-            
-            Events can be defined and extended server-side. 
-            
+
+            Events can be defined and extended server-side.
+
             If you use the LoadBalancing application as base, several events like EvJoin and EvLeave are already defined.
-            For these events and their Parameters, the library provides constants, so check the EventCode and ParameterCode 
+            For these events and their Parameters, the library provides constants, so check the EventCode and ParameterCode
             classes.
-            
-            Photon also allows you to come up with custom events on the fly, purely client-side. To do so, use 
+
+            Photon also allows you to come up with custom events on the fly, purely client-side. To do so, use
             OpRaiseEvent.<para></para>
-            
+
             Events are buffered on the client side and must be Dispatched. This way, OnEvent is always taking
             place in the same thread as a <see cref="M:ExitGames.Client.Photon.PhotonPeer.DispatchIncomingCommands" /> call.
             </remarks>
@@ -262,7 +262,7 @@
             <remarks>
             This method expects any address to include a port. The final ':' in addressAndPort has to separate it.
             IPv6 addresses have multiple colons and <b>must use brackets</b> to separate address from port.
-            
+
             Examples:
                 ns.exitgames.com:5058
                 http://[2001:db8:1f70::999:de8:7648:6e8]:100/
@@ -304,12 +304,12 @@
             <remarks>
             For performance reasons, the lag and jitter settings can't be produced exactly.
             In some cases, the resulting lag will be up to 20ms bigger than the lag settings.
-            Even if all settings are 0, simulation will be used. Set PhotonPeer.IsSimulationEnabled 
+            Even if all settings are 0, simulation will be used. Set PhotonPeer.IsSimulationEnabled
             to false to disable it if no longer needed.
-            
+
             All lag, jitter and loss is additional to the current, real network conditions.
             If the network is slow in reality, this will add even more lag.
-            The jitter values will affect the lag positive and negative, so the lag settings 
+            The jitter values will affect the lag positive and negative, so the lag settings
             describe the medium lag even with jitter. The jitter influence is: [-jitter..+jitter].
             Packets "lost" due to OutgoingLossPercentage count for BytesOut and LostPackagesOut.
             Packets "lost" due to IncomingLossPercentage count for BytesIn and LostPackagesIn.
@@ -632,7 +632,7 @@
              void OnEvent(...) {
                int eventSizeInBytes = this.peer.ByteCountCurrentDispatch;
                //...
-            
+
              void OnOperationResponse(...) {
                int resultSizeInBytes = this.peer.ByteCountCurrentDispatch;
                //...
@@ -650,7 +650,7 @@
              <remarks>
              Get this value immediately after calling an operation.
              Example:
-            
+
              this.loadbalancingClient.OpJoinRoom("myroom");
              int opjoinByteCount = this.loadbalancingClient.ByteCountLastOperation;
              </remarks>
@@ -741,9 +741,9 @@
              This sets only the initial size. All lists simply grow in size as needed. This means that
              incoming or outgoing commands can pile up and consume heap size if Service is not called
              often enough to handle the messages in either direction.
-            
+
              Configure the WarningSize, to get callbacks when the lists reach a certain size.
-            
+
              UDP: Incoming and outgoing commands each have separate buffers for reliable and unreliable sending.
              There are additional buffers for &quot;sent commands&quot; and &quot;ACKs&quot;.
              TCP: Only two buffers exist: incoming and outgoing commands.
@@ -799,7 +799,7 @@
              The checksum enables both sides to detect and ignore packages that were corrupted during transfer.
              Corrupted packages have the same impact as lost packages: They require a re-send, adding a delay
              and could lead to timeouts.
-            
+
              Building the checksum has a low processing overhead but increases integrity of sent and received data.
              Packages discarded due to failed CRC cecks are counted in PhotonPeer.PacketLossByCrc.
              </remarks>
@@ -808,7 +808,7 @@
             <summary>
             Count of packages dropped due to failed CRC checks for this connection.
             </summary>
-            <see cref="P:ExitGames.Client.Photon.PhotonPeer.CrcEnabled"/>
+            <see cref="P:ExitGames.Client.Photon.PhotonPeer.CrcEnabled" />
         </member>
         <member name="P:ExitGames.Client.Photon.PhotonPeer.PacketLossByChallenge">
             <summary>
@@ -836,7 +836,7 @@
              The initial timeout countdown of a command is calculated by the current roundTripTime + 4 * roundTripTimeVariance.
              Please note that the timeout span until a command will be resent is not constant, but based on
              the roundtrip time at the initial sending, which will be doubled with every failed retry.
-            
+
              DisconnectTimeout and SentCountAllowance are competing settings: either might trigger a disconnect on the
              client first, depending on the values and Rountrip Time.
              </summary>
@@ -856,7 +856,7 @@
              DisconnectTimeout is not an exact value for a timeout. The exact timing of the timeout depends on the frequency
              of Service() calls and commands that are sent with long roundtrip-times and variance are checked less often for
              re-sending!
-            
+
              DisconnectTimeout and SentCountAllowance are competing settings: either might trigger a disconnect on the
              client first, depending on the values and Rountrip Time.
              Default: 10000 ms.
@@ -870,15 +870,15 @@
              UDP: The server's timestamp is automatically fetched after connecting (once). This is done
              internally by a command which is acknowledged immediately by the server.
              TCP: The server's timestamp fetched with each ping but set only after connecting (once).
-            
+
              The approximation will be off by +/- 10ms in most cases. Per peer/client and connection, the
              offset will be constant (unless FetchServerTimestamp() is used). A constant offset should be
              better to adjust for. Unfortunately there is no way to find out how much the local value
              differs from the original.
-            
+
              The approximation adds RoundtripTime / 2 and uses this.LocalTimeInMilliSeconds to calculate
              in-between values (this property returns a new value per tick).
-            
+
              The value sent by Photon equals Environment.TickCount in the logic layer.
              </remarks>
              <value>
@@ -925,12 +925,12 @@
         <member name="P:ExitGames.Client.Photon.PhotonPeer.RoundTripTime">
              <summary>
              Time until a reliable command is acknowledged by the server.
-            
+
              The value measures network latency and for UDP it includes the server's ACK-delay (setting in config).
              In TCP, there is no ACK-delay, so the value is slightly lower (if you use default settings for Photon).
-            
+
              RoundTripTime is updated constantly. Every reliable command will contribute a fraction to this value.
-            
+
              This is also the approximate time until a raised event reaches another client or until an operation
              result is available.
              </summary>
@@ -1033,17 +1033,17 @@
         <member name="M:ExitGames.Client.Photon.PhotonPeer.Connect(System.String,System.String)">
              <summary>
              This method does a DNS lookup (if necessary) and connects to the given serverAddress.
-            
+
              The return value gives you feedback if the address has the correct format. If so, this
              starts the process to establish the connection itself, which might take a few seconds.
-            
+
              When the connection is established, a callback to IPhotonPeerListener.OnStatusChanged
              will be done. If the connection can't be established, despite having a valid address,
              the OnStatusChanged is called with an error-value.
-            
+
              The applicationName defines the application logic to use server-side and it should match the name of
              one of the apps in your server's config.
-            
+
              By default, the applicationName is "LoadBalancing" but there is also the "MmoDemo".
              You can setup your own application and name it any way you like.
              </summary>
@@ -1066,11 +1066,11 @@
              Calling this method does not immediately close a connection. Disconnect lets the server
              know that this client is no longer listening. For the server, this is a much faster way
              to detect that the client is gone but it requires the client to send a few final messages.
-            
+
              On completion, OnStatusChanged is called with the StatusCode.Disconnect.
-            
+
              If the client is disconnected already or the connection thread is stopped, then there is no callback.
-            
+
              The default server logic will leave any joined game and trigger the respective event
              (<see cref="!:EventCode.Leave" text="EventCode.Leave" />) for the remaining players.
              </remarks>
@@ -1087,10 +1087,10 @@
         <member name="M:ExitGames.Client.Photon.PhotonPeer.FetchServerTimestamp">
              <summary>
              This will fetch the server's timestamp and update the approximation for property ServerTimeInMilliseconds.
-            
+
              The server time approximation will NOT become more accurate by repeated calls. Accuracy currently depends
              on a single roundtrip which is done as fast as possible.
-            
+
              The command used for this is immediately acknowledged by the server. This makes sure the roundtrip time is
              low and the timestamp + rountriptime / 2 is close to the original value.
              </summary>
@@ -1102,7 +1102,7 @@
              <remarks>
              Encryption is not instantly available but calls OnStatusChanged when it finishes.
              Check for StatusCode EncryptionEstablished and EncryptionFailedToEstablish.
-            
+
              Calling this method sets IsEncryptionAvailable to false.
              This method must be called before the "encrypt" parameter of OpCustom can be used.
              </remarks>
@@ -1116,24 +1116,24 @@
              The Photon client libraries are designed to fit easily into a game or application. The application
              is in control of the context (thread) in which incoming events and responses are executed and has
              full control of the creation of UDP/TCP packages.
-            
+
              Sending packages and dispatching received messages are two separate tasks. Service combines them
              into one method at the cost of control. It calls DispatchIncomingCommands and SendOutgoingCommands.
-            
+
              Call this method regularly (2..20 times a second).
-            
+
              This will Dispatch ANY remaining buffered responses and events AND will send queued outgoing commands.
              Fewer calls might be more effective if a device cannot send many packets per second, as multiple
              operations might be combined into one package.
              </remarks>
              <example>
              You could replace Service by:
-            
+
                  while (DispatchIncomingCommands()); //Dispatch until everything is Dispatched...
                  SendOutgoingCommands(); //Send a UDP/TCP package with outgoing messages
              </example>
-             <seealso cref="M:ExitGames.Client.Photon.PhotonPeer.DispatchIncomingCommands"/>
-             <seealso cref="M:ExitGames.Client.Photon.PhotonPeer.SendOutgoingCommands"/>
+             <seealso cref="M:ExitGames.Client.Photon.PhotonPeer.DispatchIncomingCommands" />
+             <seealso cref="M:ExitGames.Client.Photon.PhotonPeer.SendOutgoingCommands" />
         </member>
         <member name="M:ExitGames.Client.Photon.PhotonPeer.SendOutgoingCommands">
              <summary>
@@ -1145,7 +1145,7 @@
              As the Photon library does not create any UDP/TCP packages by itself. Instead, the application
              fully controls how many packages are sent and when. A tradeoff, an application will
              lose connection, if it is no longer calling SendOutgoingCommands or Service.
-            
+
              If multiple operations and ACKs are waiting to be sent, they will be aggregated into one
              package. The package fills in this order:
                ACKs for received commands
@@ -1153,12 +1153,12 @@
                Starting with the lowest Channel-Nr:
                  Reliable Commands in channel
                  Unreliable Commands in channel
-            
+
              This gives a higher priority to lower channels.
-            
+
              A longer interval between sends will lower the overhead per sent operation but
              increase the internal delay (which adds "lag").
-            
+
              Call this 2..20 times per second (depending on your target platform).
              </remarks>
              <returns>The if commands are not yet sent. Udp limits it's package size, Tcp doesnt.</returns>
@@ -1175,7 +1175,7 @@
              In general, this method should be called until it returns false. In a few cases, it might
              make sense to pause dispatching (if a certain state is reached and the app needs to load
              data, before it should handle new events).
-            
+
              The callbacks to the peer's IPhotonPeerListener are executed in the same thread that is
              calling DispatchIncomingCommands. This makes things easier in a game loop: Event execution
              won't clash with painting objects or the game logic.
@@ -1224,7 +1224,7 @@
              </summary>
              <summary>
              Variant with encryption parameter.
-            
+
              Use this only after encryption was established by EstablishEncryption and waiting for the OnStateChanged callback.
              </summary>
              <param name="customOpCode">Operations are handled by their byte\-typed code. The codes of the
@@ -1242,7 +1242,7 @@
              </summary>
              <remarks>
              Variant with an OperationRequest object.
-            
+
              This variant offers an alternative way to describe a operation request. Operation code and it's parameters
              are wrapped up in a object. Still, the parameters are a Dictionary.
              </remarks>
@@ -1259,7 +1259,7 @@
              <remarks>
              SerializeMethod and DeserializeMethod are complementary: Feed the product of serializeMethod to
              the constructor, to get a comparable instance of the object.
-            
+
              After registering a Type, it can be used in events and operations and will be serialized like
              built-in types.
              </remarks>
@@ -1303,7 +1303,7 @@
             <remarks>
             The OperationCode defines the type of operation called on Photon and in turn also the Parameters that
             are set in the request. Those are provided as Dictionary with byte-keys.
-            There are pre-defined constants for various codes defined in the LoadBalancing application. 
+            There are pre-defined constants for various codes defined in the LoadBalancing application.
             Check: OperationCode, ParameterCode, etc.
             <para></para>
             An operation's request is summarized by the ReturnCode: a short typed code for &quot;Ok&quot; or
@@ -1350,7 +1350,7 @@
             </summary>
             <remarks>
             The indexer of this class provides access to the Parameters Dictionary.
-            
+
             The operation RaiseEvent allows you to provide custom event content. Defined in LoadBalancing, this
             CustomContent will be made the value of key ParameterCode.CustomEventContent.
             </remarks>
@@ -1846,19 +1846,19 @@
         </member>
         <member name="M:Photon.SocketServer.Security.DiffieHellmanCryptoProvider.#ctor">
             <summary>
-            Initializes a new instance of the <see cref="T:Photon.SocketServer.Security.DiffieHellmanCryptoProvider"/> class.
+            Initializes a new instance of the <see cref="T:Photon.SocketServer.Security.DiffieHellmanCryptoProvider" /> class.
             </summary>
         </member>
         <member name="P:Photon.SocketServer.Security.DiffieHellmanCryptoProvider.PublicKey">
             <summary>
-            Gets the public key that can be used by another DiffieHellmanCryptoProvider object 
+            Gets the public key that can be used by another DiffieHellmanCryptoProvider object
             to generate a shared secret agreement.
             </summary>
         </member>
         <member name="M:Photon.SocketServer.Security.DiffieHellmanCryptoProvider.DeriveSharedKey(System.Byte[])">
             <summary>
-            Derives the shared key is generated from the secret agreement between two parties, 
-            given a byte array that contains the second party's public key. 
+            Derives the shared key is generated from the secret agreement between two parties,
+            given a byte array that contains the second party's public key.
             </summary>
             <param name="otherPartyPublicKey">
             The second party's public key.
@@ -1866,7 +1866,7 @@
         </member>
         <member name="T:Photon.SocketServer.Security.OakleyGroups">
             <summary>
-            Provides classical Diffie-Hellman Modular Exponentiation Groups defined by the 
+            Provides classical Diffie-Hellman Modular Exponentiation Groups defined by the
             OAKLEY Key Determination Protocol (RFC 2412).
             </summary>
         </member>
@@ -1877,17 +1877,17 @@
         </member>
         <member name="F:Photon.SocketServer.Security.OakleyGroups.OakleyPrime768">
             <summary>
-            Gets the 768 bit prime for the well known group 1. 
+            Gets the 768 bit prime for the well known group 1.
             </summary>
         </member>
         <member name="F:Photon.SocketServer.Security.OakleyGroups.OakleyPrime1024">
             <summary>
-            Gets the 1024 bit prime for the well known group 2. 
+            Gets the 1024 bit prime for the well known group 2.
             </summary>
         </member>
         <member name="F:Photon.SocketServer.Security.OakleyGroups.OakleyPrime1536">
             <summary>
-            Gets the 1536  bit prime for the well known group 5. 
+            Gets the 1536  bit prime for the well known group 5.
             </summary>
         </member>
     </members>

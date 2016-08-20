@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class RPGCamera : MonoBehaviour
 {
@@ -11,23 +10,23 @@ public class RPGCamera : MonoBehaviour
     public float ScrollModifier;
     public float TurnModifier;
 
-    Transform m_CameraTransform;
+    private Transform m_CameraTransform;
 
-    Vector3 m_LookAtPoint;
-    Vector3 m_LocalForwardVector;
-    float m_Distance;
+    private Vector3 m_LookAtPoint;
+    private Vector3 m_LocalForwardVector;
+    private float m_Distance;
 
-    void Start()
+    private void Start()
     {
-        m_CameraTransform = transform.GetChild( 0 );
+        m_CameraTransform = transform.GetChild(0);
         m_LocalForwardVector = m_CameraTransform.forward;
 
         m_Distance = -m_CameraTransform.localPosition.z / m_CameraTransform.forward.z;
-        m_Distance = Mathf.Clamp( m_Distance, MinimumDistance, MaximumDistance );
+        m_Distance = Mathf.Clamp(m_Distance, MinimumDistance, MaximumDistance);
         m_LookAtPoint = m_CameraTransform.localPosition + m_LocalForwardVector * m_Distance;
     }
 
-    void LateUpdate()
+    private void LateUpdate()
     {
         UpdateDistance();
         UpdateZoom();
@@ -35,19 +34,19 @@ public class RPGCamera : MonoBehaviour
         UpdateRotation();
     }
 
-    void UpdateDistance()
+    private void UpdateDistance()
     {
-        m_Distance = Mathf.Clamp( m_Distance - Input.GetAxis( "Mouse ScrollWheel" ) * ScrollModifier, MinimumDistance, MaximumDistance );
+        m_Distance = Mathf.Clamp(m_Distance - Input.GetAxis("Mouse ScrollWheel") * ScrollModifier, MinimumDistance, MaximumDistance);
     }
 
-    void UpdateZoom()
+    private void UpdateZoom()
     {
         m_CameraTransform.localPosition = m_LookAtPoint - m_LocalForwardVector * m_Distance;
     }
 
-    void UpdatePosition()
+    private void UpdatePosition()
     {
-        if( Target == null )
+        if (Target == null)
         {
             return;
         }
@@ -55,16 +54,16 @@ public class RPGCamera : MonoBehaviour
         transform.position = Target.transform.position;
     }
 
-    void UpdateRotation()
+    private void UpdateRotation()
     {
-        if( Input.GetMouseButton( 0 ) == true || Input.GetMouseButton( 1 ) == true || Input.GetButton("Fire1") || Input.GetButton("Fire2"))
+        if (Input.GetMouseButton(0) == true || Input.GetMouseButton(1) == true || Input.GetButton("Fire1") || Input.GetButton("Fire2"))
         {
-            transform.Rotate( 0, Input.GetAxis( "Mouse X" ) * TurnModifier, 0 );
+            transform.Rotate(0, Input.GetAxis("Mouse X") * TurnModifier, 0);
         }
 
-        if((Input.GetMouseButton( 1 ) || Input.GetButton("Fire2")) && Target != null )
+        if ((Input.GetMouseButton(1) || Input.GetButton("Fire2")) && Target != null)
         {
-            Target.rotation = Quaternion.Euler( 0, transform.rotation.eulerAngles.y, 0 );
+            Target.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
         }
     }
 }

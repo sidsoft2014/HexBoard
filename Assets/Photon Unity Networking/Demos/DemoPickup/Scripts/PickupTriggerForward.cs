@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections;
 
 /// <summary>
 /// Simple script to forward a sub-objects OnTriggerEnter to the parent's PickupItem-component.
@@ -7,16 +6,14 @@ using System.Collections;
 /// <remarks>
 /// This is useful when a physcial object has a collider but also needs a trigger.
 /// </remarks>
-public class PickupTriggerForward : MonoBehaviour {
-
-    
-
+public class PickupTriggerForward : MonoBehaviour
+{
     public void OnTriggerEnter(Collider other)
     {
         PickupItem parentPickupItem = this.transform.parent.GetComponent<PickupItem>();
         if (parentPickupItem != null)
         {
-           parentPickupItem.OnTriggerEnter(other);
+            parentPickupItem.OnTriggerEnter(other);
         }
 
         // by enabling this log, you can see that more triggers are forwarded than necessary.

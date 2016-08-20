@@ -51,7 +51,6 @@ public class WorkerInGame : Photon.MonoBehaviour
                 message = player.name + " is Master Client now.";
             }
 
-
             chatComponent.AddLine(message); // the Chat method is a RPC. as we don't want to send an RPC and neither create a PhotonMessageInfo, lets call AddLine()
         }
     }

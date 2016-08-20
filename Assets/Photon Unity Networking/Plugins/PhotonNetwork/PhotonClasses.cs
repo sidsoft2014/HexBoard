@@ -24,14 +24,11 @@
 #define UNITY_MIN_5_3
 #endif
 
-using System;
-using System.Collections.Generic;
 using ExitGames.Client.Photon;
+using System.Collections.Generic;
 using UnityEngine;
-
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 using SupportClassPun = ExitGames.Client.Photon.SupportClass;
-
 
 /// <summary>Defines the OnPhotonSerializeView method to make it easy to implement correctly for observable scripts.</summary>
 /// \ingroup publicApi
@@ -431,7 +428,6 @@ public interface IPunPrefabPool
     void Destroy(GameObject gameObject);
 }
 
-
 namespace Photon
 {
     using Hashtable = ExitGames.Client.Photon.Hashtable;
@@ -463,7 +459,7 @@ namespace Photon
             }
         }
 
-        #if !UNITY_MIN_5_3
+#if !UNITY_MIN_5_3
         /// <summary>
         /// This property is only here to notify developers when they use the outdated value.
         /// </summary>
@@ -486,9 +482,8 @@ namespace Photon
                 return PhotonView.Get(this);
             }
         }
-        #endif
+#endif
     }
-
 
     /// <summary>
     /// This class provides a .photonView and all callbacks/events that PUN can call. Override the events/methods you want to use.
@@ -870,7 +865,6 @@ namespace Photon
     }
 }
 
-
 /// <summary>
 /// Container class for info about a particular message, RPC or update.
 /// </summary>
@@ -915,8 +909,6 @@ public class PhotonMessageInfo
     }
 }
 
-
-
 /// <summary>Defines Photon event-codes as used by PUN.</summary>
 internal class PunEvent
 {
@@ -951,7 +943,7 @@ internal class PunEvent
 /// \ingroup publicApi
 public class PhotonStream
 {
-    bool write = false;
+    private bool write = false;
     private Queue<object> writeData;
     private object[] readData;
     internal byte currentItem = 0; //Used to track the next item to receive.
@@ -1235,7 +1227,6 @@ public class PhotonStream
     }
 }
 
-
 #if UNITY_5_0 || !UNITY_5
 /// <summary>Empty implementation of the upcoming HelpURL of Unity 5.1. This one is only for compatibility of attributes.</summary>
 /// <remarks>http://feedback.unity3d.com/suggestions/override-component-documentation-slash-help-link</remarks>
@@ -1246,7 +1237,6 @@ public class HelpURL : Attribute
     }
 }
 #endif
-
 
 #if !UNITY_MIN_5_3
 // in Unity 5.3 and up, we have to use a SceneManager. This section re-implements it for older Unity versions
@@ -1299,19 +1289,18 @@ namespace UnityEngine.SceneManagement
 
 #endif
 
-
 public class SceneManagerHelper
 {
     public static string ActiveSceneName
     {
         get
         {
-            #if UNITY_MIN_5_3
+#if UNITY_MIN_5_3
             UnityEngine.SceneManagement.Scene s = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
             return s.name;
-            #else
+#else
             return Application.loadedLevelName;
-            #endif
+#endif
         }
     }
 
@@ -1319,30 +1308,30 @@ public class SceneManagerHelper
     {
         get
         {
-            #if UNITY_MIN_5_3
+#if UNITY_MIN_5_3
             return UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex;
-            #else
+#else
             return Application.loadedLevel;
-            #endif
+#endif
         }
     }
 
-
 #if UNITY_EDITOR
+
     public static string EditorActiveSceneName
     {
         get
         {
-            #if UNITY_MIN_5_3
+#if UNITY_MIN_5_3
             return UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene().name;
-            #else
+#else
             return System.IO.Path.GetFileNameWithoutExtension(UnityEditor.EditorApplication.currentScene);
-            #endif
+#endif
         }
     }
+
 #endif
 }
-
 
 /// <summary>Reads an operation response of a WebRpc and provides convenient access to most common values.</summary>
 /// <remarks>
@@ -1354,6 +1343,7 @@ public class WebRpcResponse
 {
     /// <summary>Name of the WebRpc that was called.</summary>
     public string Name { get; private set; }
+
     /// <summary>ReturnCode of the WebService that answered the WebRpc.</summary>
     /// <remarks>
     /// 0 is commonly used to signal success.<br/>
@@ -1361,8 +1351,10 @@ public class WebRpcResponse
     /// Other ReturnCodes are defined by the individual WebRpc and service.
     /// </remarks>
     public int ReturnCode { get; private set; }
+
     /// <summary>Might be empty or null.</summary>
     public string DebugMessage { get; private set; }
+
     /// <summary>Other key/values returned by the webservice that answered the WebRpc.</summary>
     public Dictionary<string, object> Parameters { get; private set; }
 

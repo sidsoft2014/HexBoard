@@ -7,29 +7,27 @@
 using ExitGames.Client.Photon;
 using UnityEngine;
 
-
 /// <summary>
 /// Simple script that uses a property to sync a start time for a multiplayer game.
 /// </summary>
 /// <remarks>
-/// When entering a room, the first player will store the synchronized timestamp. 
+/// When entering a room, the first player will store the synchronized timestamp.
 /// You can't set the room's synchronized time in CreateRoom, because the clock on the Master Server
 /// and those on the Game Servers are not in sync. We use many servers and each has it's own timer.
-/// 
+///
 /// Everyone else will join the room and check the property to calculate how much time passed since start.
 /// You can start a new round whenever you like.
-/// 
+///
 /// Based on this, you should be able to implement a synchronized timer for turns between players.
 /// </remarks>
 public class InRoomRoundTimer : MonoBehaviour
 {
     public int SecondsPerTurn = 5;                  // time per round/turn
     public double StartTime;                        // this should could also be a private. i just like to see this in inspector
-    public Rect TextPos = new Rect(0,80,150,300);   // default gui position. inspector overrides this!
+    public Rect TextPos = new Rect(0, 80, 150, 300);   // default gui position. inspector overrides this!
 
     private bool startRoundWhenTimeIsSynced;        // used in an edge-case when we wanted to set a start time but don't know it yet.
     private const string StartTimeKey = "st";       // the name of our "start time" custom property.
-
 
     private void StartRoundNow()
     {
@@ -43,14 +41,11 @@ public class InRoomRoundTimer : MonoBehaviour
         }
         startRoundWhenTimeIsSynced = false;
 
-        
-
         ExitGames.Client.Photon.Hashtable startTimeProp = new Hashtable();  // only use ExitGames.Client.Photon.Hashtable for Photon
         startTimeProp[StartTimeKey] = PhotonNetwork.time;
         PhotonNetwork.room.SetCustomProperties(startTimeProp);              // implement OnPhotonCustomRoomPropertiesChanged(Hashtable propertiesThatChanged) to get this change everywhere
     }
 
-    
     /// <summary>Called by PUN when this client entered a room (no matter if joined or created).</summary>
     public void OnJoinedRoom()
     {
@@ -88,8 +83,7 @@ public class InRoomRoundTimer : MonoBehaviour
         }
     }
 
-
-    void Update()
+    private void Update()
     {
         if (startRoundWhenTimeIsSynced)
         {
@@ -104,7 +98,6 @@ public class InRoomRoundTimer : MonoBehaviour
         double elapsedTime = (PhotonNetwork.time - StartTime);
         double remainingTime = SecondsPerTurn - (elapsedTime % SecondsPerTurn);
         int turn = (int)(elapsedTime / SecondsPerTurn);
-
 
         // simple gui for output
         GUILayout.BeginArea(TextPos);

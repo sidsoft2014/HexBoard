@@ -10,10 +10,8 @@
 // ----------------------------------------------------------------------------
 
 using System.Collections.Generic;
-using ExitGames.Client.Photon;
 using UnityEngine;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
-
 
 /// <summary>
 /// Summarizes a "player" within a room, identified (in that room) by actorID.
@@ -26,20 +24,90 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 /// \ingroup publicApi
 public class PhotonPlayer
 {
-    /// <summary>This player's actorID</summary>
-    public int ID
-    {
-        get { return this.actorID; }
-    }
+    /// <summary>Only one player is controlled by each client. Others are not local.</summary>
+    public readonly bool isLocal = false;
+
+    /// <summary>Can be used to store a reference that's useful to know "by player".</summary>
+    /// <remarks>Example: Set a player's character as Tag by assigning the GameObject on Instantiate.</remarks>
+    public object TagObject;
 
     /// <summary>Identifier of this player in current room.</summary>
     private int actorID = -1;
 
     private string nameField = "";
 
+    /// <summary>
+    /// Creates a PhotonPlayer instance.
+    /// </summary>
+    /// <param name="isLocal">If this is the local peer's player (or a remote one).</param>
+    /// <param name="actorID">ID or ActorNumber of this player in the current room (a shortcut to identify each player in room)</param>
+    /// <param name="name">Name of the player (a "well known property").</param>
+    public PhotonPlayer(bool isLocal, int actorID, string name)
+    {
+        this.customProperties = new Hashtable();
+        this.isLocal = isLocal;
+        this.actorID = actorID;
+        this.nameField = name;
+    }
+
+    /// <summary>
+    /// Internally used to create players from event Join
+    /// </summary>
+    protected internal PhotonPlayer(bool isLocal, int actorID, Hashtable properties)
+    {
+        this.customProperties = new Hashtable();
+        this.isLocal = isLocal;
+        this.actorID = actorID;
+
+        this.InternalCacheProperties(properties);
+    }
+
+    /// <summary>Creates a Hashtable with all properties (custom and "well known" ones).</summary>
+    /// <remarks>If used more often, this should be cached.</remarks>
+    public Hashtable allProperties
+    {
+        get
+        {
+            Hashtable allProps = new Hashtable();
+            allProps.Merge(this.customProperties);
+            allProps[ActorProperties.PlayerName] = this.name;
+            return allProps;
+        }
+    }
+
+    /// <summary>Read-only cache for custom properties of player. Set via PhotonPlayer.SetCustomProperties.</summary>
+    /// <remarks>
+    /// Don't modify the content of this Hashtable. Use SetCustomProperties and the
+    /// properties of this class to modify values. When you use those, the client will
+    /// sync values with the server.
+    /// </remarks>
+    /// <see cref="SetCustomProperties"/>
+    public Hashtable customProperties { get; internal set; }
+
+    /// <summary>This player's actorID</summary>
+    public int ID
+    {
+        get { return this.actorID; }
+    }
+
+    /// <summary>Players might be inactive in a room when PlayerTTL for a room is > 0. If true, the player is not getting events from this room (now) but can return later.</summary>
+    public bool isInactive { get; set; }
+
+    /// <summary>
+    /// True if this player is the Master Client of the current room.
+    /// </summary>
+    /// <remarks>
+    /// See also: PhotonNetwork.masterClient.
+    /// </remarks>
+    public bool isMasterClient
+    {
+        get { return (PhotonNetwork.networkingPeer.mMasterClientId == this.ID); }
+    }
+
     /// <summary>Nickname of this player.</summary>
     /// <remarks>Set the PhotonNetwork.playerName to make the name synchronized in a room.</remarks>
-    public string name {
+    public string name
+    {
         get
         {
             return this.nameField;
@@ -65,78 +133,21 @@ public class PhotonPlayer
     /// <remarks>Useful for PhotonNetwork.FindFriends and blocking slots in a room for expected players (e.g. in PhotonNetwork.CreateRoom).</remarks>
     public string userId { get; internal set; }
 
-    /// <summary>Only one player is controlled by each client. Others are not local.</summary>
-    public readonly bool isLocal = false;
-
     /// <summary>
-    /// True if this player is the Master Client of the current room.
+    /// Try to get a specific player by id.
     /// </summary>
-    /// <remarks>
-    /// See also: PhotonNetwork.masterClient.
-    /// </remarks>
-    public bool isMasterClient
+    /// <param name="ID">ActorID</param>
+    /// <returns>The player with matching actorID or null, if the actorID is not in use.</returns>
+    public static PhotonPlayer Find(int ID)
     {
-        get { return (PhotonNetwork.networkingPeer.mMasterClientId == this.ID); }
-    }
-
-
-    /// <summary>Players might be inactive in a room when PlayerTTL for a room is > 0. If true, the player is not getting events from this room (now) but can return later.</summary>
-    public bool isInactive { get; set; }    // needed for rejoins
-
-
-    /// <summary>Read-only cache for custom properties of player. Set via PhotonPlayer.SetCustomProperties.</summary>
-    /// <remarks>
-    /// Don't modify the content of this Hashtable. Use SetCustomProperties and the
-    /// properties of this class to modify values. When you use those, the client will
-    /// sync values with the server.
-    /// </remarks>
-    /// <see cref="SetCustomProperties"/>
-    public Hashtable customProperties { get; internal set; }
-
-    /// <summary>Creates a Hashtable with all properties (custom and "well known" ones).</summary>
-    /// <remarks>If used more often, this should be cached.</remarks>
-    public Hashtable allProperties
-    {
-        get
+        if (PhotonNetwork.networkingPeer != null)
         {
-            Hashtable allProps = new Hashtable();
-            allProps.Merge(this.customProperties);
-            allProps[ActorProperties.PlayerName] = this.name;
-            return allProps;
+            return PhotonNetwork.networkingPeer.GetPlayerWithId(ID);
         }
+        return null;
     }
 
-    /// <summary>Can be used to store a reference that's useful to know "by player".</summary>
-    /// <remarks>Example: Set a player's character as Tag by assigning the GameObject on Instantiate.</remarks>
-    public object TagObject;
-
-
-    /// <summary>
-    /// Creates a PhotonPlayer instance.
-    /// </summary>
-    /// <param name="isLocal">If this is the local peer's player (or a remote one).</param>
-    /// <param name="actorID">ID or ActorNumber of this player in the current room (a shortcut to identify each player in room)</param>
-    /// <param name="name">Name of the player (a "well known property").</param>
-    public PhotonPlayer(bool isLocal, int actorID, string name)
-    {
-        this.customProperties = new Hashtable();
-        this.isLocal = isLocal;
-        this.actorID = actorID;
-        this.nameField = name;
-    }
-
-    /// <summary>
-    /// Internally used to create players from event Join
-    /// </summary>
-    internal protected PhotonPlayer(bool isLocal, int actorID, Hashtable properties)
-    {
-        this.customProperties = new Hashtable();
-        this.isLocal = isLocal;
-        this.actorID = actorID;
-
-        this.InternalCacheProperties(properties);
-    }
-
+    // needed for rejoins
     /// <summary>
     /// Makes PhotonPlayer comparable
     /// </summary>
@@ -146,52 +157,59 @@ public class PhotonPlayer
         return (pp != null && this.GetHashCode() == pp.GetHashCode());
     }
 
+    public PhotonPlayer Get(int id)
+    {
+        return PhotonPlayer.Find(id);
+    }
+
     public override int GetHashCode()
     {
         return this.ID;
     }
 
-    /// <summary>
-    /// Used internally, to update this client's playerID when assigned.
-    /// </summary>
-    internal void InternalChangeLocalID(int newID)
+    public PhotonPlayer GetNext()
     {
-        if (!this.isLocal)
-        {
-            Debug.LogError("ERROR You should never change PhotonPlayer IDs!");
-            return;
-        }
-
-        this.actorID = newID;
+        return GetNextFor(this.ID);
     }
 
-    /// <summary>
-    /// Caches custom properties for this player.
-    /// </summary>
-    internal void InternalCacheProperties(Hashtable properties)
+    public PhotonPlayer GetNextFor(PhotonPlayer currentPlayer)
     {
-        if (properties == null || properties.Count == 0 || this.customProperties.Equals(properties))
+        if (currentPlayer == null)
         {
-            return;
+            return null;
         }
-
-        if (properties.ContainsKey(ActorProperties.PlayerName))
-        {
-            this.nameField = (string)properties[ActorProperties.PlayerName];
-        }
-        if (properties.ContainsKey(ActorProperties.UserId))
-        {
-            this.userId = (string)properties[ActorProperties.UserId];
-        }
-        if (properties.ContainsKey(ActorProperties.IsInactive))
-        {
-            this.isInactive = (bool)properties[ActorProperties.IsInactive]; //TURNBASED new well-known propery for players
-        }
-
-        this.customProperties.MergeStringKeys(properties);
-        this.customProperties.StripKeysWithNullValues();
+        return GetNextFor(currentPlayer.ID);
     }
 
+    public PhotonPlayer GetNextFor(int currentPlayerId)
+    {
+        if (PhotonNetwork.networkingPeer == null || PhotonNetwork.networkingPeer.mActors == null || PhotonNetwork.networkingPeer.mActors.Count < 2)
+        {
+            return null;
+        }
+
+        Dictionary<int, PhotonPlayer> players = PhotonNetwork.networkingPeer.mActors;
+        int nextHigherId = int.MaxValue;    // we look for the next higher ID
+        int lowestId = currentPlayerId;     // if we are the player with the highest ID, there is no higher and we return to the lowest player's id
+
+        foreach (int playerid in players.Keys)
+        {
+            if (playerid < lowestId)
+            {
+                lowestId = playerid;        // less than any other ID (which must be at least less than this player's id).
+            }
+            else if (playerid > currentPlayerId && playerid < nextHigherId)
+            {
+                nextHigherId = playerid;    // more than our ID and less than those found so far.
+            }
+        }
+
+        //UnityEngine.Debug.LogWarning("Debug. " + currentPlayerId + " lower: " + lowestId + " higher: " + nextHigherId + " ");
+        //UnityEngine.Debug.LogWarning(this.RoomReference.GetPlayer(currentPlayerId));
+        //UnityEngine.Debug.LogWarning(this.RoomReference.GetPlayer(lowestId));
+        //if (nextHigherId != int.MaxValue) UnityEngine.Debug.LogWarning(this.RoomReference.GetPlayer(nextHigherId));
+        return (nextHigherId != int.MaxValue) ? players[nextHigherId] : players[lowestId];
+    }
 
     /// <summary>
     /// Updates the this player's Custom Properties with new/updated key-values.
@@ -251,11 +269,9 @@ public class PhotonPlayer
         Hashtable customProps = propertiesToSet.StripToStringKeys() as Hashtable;
         Hashtable customPropsToCheck = expectedValues.StripToStringKeys() as Hashtable;
 
-
         // no expected values -> set and callback
         bool noCas = customPropsToCheck == null || customPropsToCheck.Count == 0;
         bool inOnlineRoom = this.actorID > 0 && !PhotonNetwork.offlineMode;
-
 
         if (inOnlineRoom)
         {
@@ -270,76 +286,13 @@ public class PhotonPlayer
     }
 
     /// <summary>
-    /// Try to get a specific player by id.
-    /// </summary>
-    /// <param name="ID">ActorID</param>
-    /// <returns>The player with matching actorID or null, if the actorID is not in use.</returns>
-    public static PhotonPlayer Find(int ID)
-    {
-        if (PhotonNetwork.networkingPeer != null)
-        {
-            return PhotonNetwork.networkingPeer.GetPlayerWithId(ID);
-        }
-        return null;
-    }
-
-    public PhotonPlayer Get(int id)
-    {
-        return PhotonPlayer.Find(id);
-    }
-
-    public PhotonPlayer GetNext()
-    {
-        return GetNextFor(this.ID);
-    }
-
-    public PhotonPlayer GetNextFor(PhotonPlayer currentPlayer)
-    {
-        if (currentPlayer == null)
-        {
-            return null;
-        }
-        return GetNextFor(currentPlayer.ID);
-    }
-
-    public PhotonPlayer GetNextFor(int currentPlayerId)
-    {
-        if (PhotonNetwork.networkingPeer == null || PhotonNetwork.networkingPeer.mActors == null || PhotonNetwork.networkingPeer.mActors.Count < 2)
-        {
-            return null;
-        }
-
-        Dictionary<int, PhotonPlayer> players = PhotonNetwork.networkingPeer.mActors;
-        int nextHigherId = int.MaxValue;    // we look for the next higher ID
-        int lowestId = currentPlayerId;     // if we are the player with the highest ID, there is no higher and we return to the lowest player's id
-
-        foreach (int playerid in players.Keys)
-        {
-            if (playerid < lowestId)
-            {
-                lowestId = playerid;        // less than any other ID (which must be at least less than this player's id).
-            }
-            else if (playerid > currentPlayerId && playerid < nextHigherId)
-            {
-                nextHigherId = playerid;    // more than our ID and less than those found so far.
-            }
-        }
-
-        //UnityEngine.Debug.LogWarning("Debug. " + currentPlayerId + " lower: " + lowestId + " higher: " + nextHigherId + " ");
-        //UnityEngine.Debug.LogWarning(this.RoomReference.GetPlayer(currentPlayerId));
-        //UnityEngine.Debug.LogWarning(this.RoomReference.GetPlayer(lowestId));
-        //if (nextHigherId != int.MaxValue) UnityEngine.Debug.LogWarning(this.RoomReference.GetPlayer(nextHigherId));
-        return (nextHigherId != int.MaxValue) ? players[nextHigherId] : players[lowestId];
-    }
-
-    /// <summary>
     /// Brief summary string of the PhotonPlayer. Includes name or player.ID and if it's the Master Client.
     /// </summary>
     public override string ToString()
     {
         if (string.IsNullOrEmpty(this.name))
         {
-            return string.Format("#{0:00}{1}{2}",  this.ID, this.isInactive ? " (inactive)" : " ", this.isMasterClient ? "(master)":"");
+            return string.Format("#{0:00}{1}{2}", this.ID, this.isInactive ? " (inactive)" : " ", this.isMasterClient ? "(master)" : "");
         }
 
         return string.Format("'{0}'{1}{2}", this.name, this.isInactive ? " (inactive)" : " ", this.isMasterClient ? "(master)" : "");
@@ -355,5 +308,46 @@ public class PhotonPlayer
     public string ToStringFull()
     {
         return string.Format("#{0:00} '{1}'{2} {3}", this.ID, this.name, this.isInactive ? " (inactive)" : "", this.customProperties.ToStringFull());
+    }
+
+    /// <summary>
+    /// Caches custom properties for this player.
+    /// </summary>
+    internal void InternalCacheProperties(Hashtable properties)
+    {
+        if (properties == null || properties.Count == 0 || this.customProperties.Equals(properties))
+        {
+            return;
+        }
+
+        if (properties.ContainsKey(ActorProperties.PlayerName))
+        {
+            this.nameField = (string)properties[ActorProperties.PlayerName];
+        }
+        if (properties.ContainsKey(ActorProperties.UserId))
+        {
+            this.userId = (string)properties[ActorProperties.UserId];
+        }
+        if (properties.ContainsKey(ActorProperties.IsInactive))
+        {
+            this.isInactive = (bool)properties[ActorProperties.IsInactive]; //TURNBASED new well-known propery for players
+        }
+
+        this.customProperties.MergeStringKeys(properties);
+        this.customProperties.StripKeysWithNullValues();
+    }
+
+    /// <summary>
+    /// Used internally, to update this client's playerID when assigned.
+    /// </summary>
+    internal void InternalChangeLocalID(int newID)
+    {
+        if (!this.isLocal)
+        {
+            Debug.LogError("ERROR You should never change PhotonPlayer IDs!");
+            return;
+        }
+
+        this.actorID = newID;
     }
 }

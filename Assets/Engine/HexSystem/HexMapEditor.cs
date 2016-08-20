@@ -3,16 +3,15 @@ using UnityEngine;
 
 public class HexMapEditor : MonoBehaviour
 {
-
     public Color[] colors;
 
     public HexGrid hexGrid;
 
     private Color activeColor;
 
-    void Awake()
+    private void Awake()
     {
-        if(hexGrid == null)
+        if (hexGrid == null)
         {
             hexGrid = FindObjectOfType<HexGrid>();
             if (hexGrid == null)
@@ -22,7 +21,7 @@ public class HexMapEditor : MonoBehaviour
         SelectColor(0);
     }
 
-    void Update()
+    private void Update()
     {
         if (Input.GetMouseButton(0))
         {
@@ -30,7 +29,7 @@ public class HexMapEditor : MonoBehaviour
         }
     }
 
-    void HandleInput()
+    private void HandleInput()
     {
         Ray inputRay = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;

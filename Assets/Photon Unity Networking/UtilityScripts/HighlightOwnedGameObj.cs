@@ -1,12 +1,11 @@
 ﻿using UnityEngine;
 
-[RequireComponent(typeof (PhotonView))]
+[RequireComponent(typeof(PhotonView))]
 public class HighlightOwnedGameObj : Photon.MonoBehaviour
 {
     public GameObject PointerPrefab;
     public float Offset = 0.5f;
     private Transform markerTransform;
-
 
     // Update is called once per frame
     private void Update()
@@ -15,7 +14,7 @@ public class HighlightOwnedGameObj : Photon.MonoBehaviour
         {
             if (this.markerTransform == null)
             {
-                GameObject markerObject = (GameObject) GameObject.Instantiate(this.PointerPrefab);
+                GameObject markerObject = (GameObject)GameObject.Instantiate(this.PointerPrefab);
                 markerObject.transform.parent = gameObject.transform;
                 this.markerTransform = markerObject.transform;
             }

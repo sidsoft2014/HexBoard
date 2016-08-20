@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections;
 
 public enum CharacterState
 {
@@ -12,7 +11,6 @@ public enum CharacterState
 
 public class ThirdPersonController : MonoBehaviour
 {
-
     public AnimationClip idleAnimation;
     public AnimationClip walkAnimation;
     public AnimationClip runAnimation;
@@ -26,14 +24,14 @@ public class ThirdPersonController : MonoBehaviour
 
     private Animation _animation;
 
-  
-
     public CharacterState _characterState;
 
     // The speed when walking
     public float walkSpeed = 2.0f;
+
     // after trotAfterSeconds of walking we trot with trotSpeed
     public float trotSpeed = 4.0f;
+
     // when pressing "Fire3" button (cmd) we start running
     public float runSpeed = 6.0f;
 
@@ -44,8 +42,10 @@ public class ThirdPersonController : MonoBehaviour
 
     // The gravity for the character
     public float gravity = 20.0f;
+
     // The gravity in controlled descent mode
     public float speedSmoothing = 10.0f;
+
     public float rotateSpeed = 500.0f;
     public float trotAfterSeconds = 3.0f;
 
@@ -60,8 +60,10 @@ public class ThirdPersonController : MonoBehaviour
 
     // The current move direction in x-z
     private Vector3 moveDirection = Vector3.zero;
+
     // The current vertical speed
     private float verticalSpeed = 0.0f;
+
     // The current x-z move speed
     private float moveSpeed = 0.0f;
 
@@ -70,18 +72,24 @@ public class ThirdPersonController : MonoBehaviour
 
     // Are we jumping? (Initiated with jump button and not grounded yet)
     private bool jumping = false;
+
     private bool jumpingReachedApex = false;
 
     // Are we moving backwards (This locks the camera to not do a 180 degree spin)
     private bool movingBack = false;
+
     // Is the user pressing any keys?
     private bool isMoving = false;
+
     // When did the user start walking (Used for going into trot after a while)
     private float walkTimeStart = 0.0f;
+
     // Last time the jump button was clicked down
     private float lastJumpButtonTime = -10.0f;
+
     // Last time we performed a jump
     private float lastJumpTime = -1.0f;
+
     // the height we jumped from (Used to determine for how long to apply extra jump power after jumping.)
     //private float lastJumpStartHeight = 0.0f;
     private Vector3 inAirVelocity = Vector3.zero;
@@ -89,7 +97,7 @@ public class ThirdPersonController : MonoBehaviour
     private float lastGroundedTime = 0.0f;
     public bool isControllable = true;
 
-    void Awake()
+    private void Awake()
     {
         moveDirection = transform.TransformDirection(Vector3.forward);
 
@@ -101,7 +109,7 @@ public class ThirdPersonController : MonoBehaviour
     public AnimationClip idleAnimation;
     public AnimationClip walkAnimation;
     public AnimationClip runAnimation;
-    public AnimationClip jumpPoseAnimation;	
+    public AnimationClip jumpPoseAnimation;
         */
         if (!idleAnimation)
         {
@@ -123,17 +131,16 @@ public class ThirdPersonController : MonoBehaviour
             _animation = null;
             Debug.Log("No jump animation found and the character has canJump enabled. Turning off animations.");
         }
-
     }
 
     private Vector3 lastPos;
 
-    void UpdateSmoothedMovementDirection()
+    private void UpdateSmoothedMovementDirection()
     {
         Transform cameraTransform = Camera.main.transform;
         bool grounded = IsGrounded();
 
-        // Forward vector relative to the camera along the x-z plane	
+        // Forward vector relative to the camera along the x-z plane
         Vector3 forward = cameraTransform.TransformDirection(Vector3.forward);
         forward.y = 0;
         forward = forward.normalized;
@@ -209,7 +216,7 @@ public class ThirdPersonController : MonoBehaviour
                 targetSpeed *= walkSpeed;
                 _characterState = CharacterState.Walking;
             }
-        
+
             moveSpeed = Mathf.Lerp(moveSpeed, targetSpeed, curSmooth);
 
             // Reset walk time start when we slow down
@@ -226,11 +233,9 @@ public class ThirdPersonController : MonoBehaviour
             if (isMoving)
                 inAirVelocity += targetDirection.normalized * Time.deltaTime * inAirControlAcceleration;
         }
-
-
-
     }
-    void ApplyJumping()
+
+    private void ApplyJumping()
     {
         // Prevent jumping too fast after each other
         if (lastJumpTime + jumpRepeatTime > Time.time)
@@ -240,7 +245,7 @@ public class ThirdPersonController : MonoBehaviour
         {
             // Jump
             // - Only when pressing the button down
-            // - With a timeout so you can press the button slightly before landing		
+            // - With a timeout so you can press the button slightly before landing
             if (canJump && Time.time < lastJumpButtonTime + jumpTimeout)
             {
                 verticalSpeed = CalculateJumpVerticalSpeed(jumpHeight);
@@ -248,13 +253,14 @@ public class ThirdPersonController : MonoBehaviour
             }
         }
     }
-    void ApplyGravity()
+
+    private void ApplyGravity()
     {
         if (isControllable)	// don't move player at all if not controllable.
         {
             // Apply gravity
             //bool jumpButton = Input.GetButton("Jump");
-            
+
             // When we reach the apex of the jump we send out a message
             if (jumping && !jumpingReachedApex && verticalSpeed <= 0.0f)
             {
@@ -269,14 +275,14 @@ public class ThirdPersonController : MonoBehaviour
         }
     }
 
-    float CalculateJumpVerticalSpeed(float targetJumpHeight)
+    private float CalculateJumpVerticalSpeed(float targetJumpHeight)
     {
-        // From the jump height and gravity we deduce the upwards speed 
+        // From the jump height and gravity we deduce the upwards speed
         // for the character to reach at the apex.
         return Mathf.Sqrt(2 * targetJumpHeight * gravity);
     }
 
-    void DidJump()
+    private void DidJump()
     {
         jumping = true;
         jumpingReachedApex = false;
@@ -287,10 +293,10 @@ public class ThirdPersonController : MonoBehaviour
         _characterState = CharacterState.Jumping;
     }
 
-    Vector3 velocity = Vector3.zero;
+    private Vector3 velocity = Vector3.zero;
 
-    void Update()
-    {        
+    private void Update()
+    {
         if (isControllable)
         {
             if (Input.GetButtonDown("Jump"))
@@ -308,7 +314,6 @@ public class ThirdPersonController : MonoBehaviour
             // Apply jumping logic
             ApplyJumping();
 
-
             // Calculate actual motion
             Vector3 movement = moveDirection * moveSpeed + new Vector3(0, verticalSpeed, 0) + inAirVelocity;
             movement *= Time.deltaTime;
@@ -317,7 +322,7 @@ public class ThirdPersonController : MonoBehaviour
             CharacterController controller = GetComponent<CharacterController>();
             collisionFlags = controller.Move(movement);
         }
-        velocity = (transform.position - lastPos)*25;
+        velocity = (transform.position - lastPos) * 25;
 
         // ANIMATION sector
         if (_animation)
@@ -377,7 +382,6 @@ public class ThirdPersonController : MonoBehaviour
                         }
                         _animation.CrossFade(walkAnimation.name);
                     }
-
                 }
             }
         }
@@ -386,9 +390,7 @@ public class ThirdPersonController : MonoBehaviour
         // Set rotation to the move direction
         if (IsGrounded())
         {
-
             transform.rotation = Quaternion.LookRotation(moveDirection);
-
         }
         else
         {
@@ -416,7 +418,7 @@ public class ThirdPersonController : MonoBehaviour
         lastPos = transform.position;
     }
 
-    void OnControllerColliderHit(ControllerColliderHit hit)
+    private void OnControllerColliderHit(ControllerColliderHit hit)
     {
         //	Debug.DrawRay(hit.point, hit.normal);
         if (hit.moveDirection.y > 0.01f)
@@ -472,6 +474,4 @@ public class ThirdPersonController : MonoBehaviour
     {
         gameObject.tag = "Player";
     }
-
-
 }

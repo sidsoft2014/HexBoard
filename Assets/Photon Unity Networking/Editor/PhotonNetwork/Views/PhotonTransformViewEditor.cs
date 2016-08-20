@@ -8,16 +8,14 @@
 // <author>developer@exitgames.com</author>
 // ----------------------------------------------------------------------------
 
-
 #if UNITY_5 && !UNITY_5_0 && !UNITY_5_1 && !UNITY_5_2
 #define UNITY_MIN_5_3
 #endif
 
-
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof (PhotonTransformView))]
+[CustomEditor(typeof(PhotonTransformView))]
 public class PhotonTransformViewEditor : Editor
 {
     //private PhotonTransformView m_Target;
@@ -62,7 +60,7 @@ public class PhotonTransformViewEditor : Editor
 
     public override void OnInspectorGUI()
     {
-		serializedObject.Update ();
+        serializedObject.Update();
 
         //this.m_Target = (PhotonTransformView) target;
 
@@ -132,9 +130,9 @@ public class PhotonTransformViewEditor : Editor
             case PhotonTransformViewPositionModel.InterpolateOptions.Lerp:
                 containerHeight += EDITOR_LINE_HEIGHT;
                 break;
-            /*case PhotonTransformViewPositionModel.InterpolateOptions.MoveTowardsComplex:
-                containerHeight += EDITOR_LINE_HEIGHT*3;
-                break;*/
+                /*case PhotonTransformViewPositionModel.InterpolateOptions.MoveTowardsComplex:
+                    containerHeight += EDITOR_LINE_HEIGHT*3;
+                    break;*/
         }
 
         if (extrapolateOption != PhotonTransformViewPositionModel.ExtrapolateOptions.Disabled)
@@ -297,25 +295,25 @@ public class PhotonTransformViewEditor : Editor
                 propertyRect.y += EDITOR_LINE_HEIGHT;
                 break;
 
-            /*case PhotonTransformViewPositionModel.InterpolateOptions.MoveTowardsComplex:
-                Rect curveRect = new Rect(propertyRect.xMin, propertyRect.yMin, propertyRect.width - 100, propertyRect.height);
-                EditorGUI.PropertyField(curveRect, serializedObject.FindProperty("m_PositionModel.InterpolateSpeedCurve"), new GUIContent("MoveTowards Speed Curve"));
+                /*case PhotonTransformViewPositionModel.InterpolateOptions.MoveTowardsComplex:
+                    Rect curveRect = new Rect(propertyRect.xMin, propertyRect.yMin, propertyRect.width - 100, propertyRect.height);
+                    EditorGUI.PropertyField(curveRect, serializedObject.FindProperty("m_PositionModel.InterpolateSpeedCurve"), new GUIContent("MoveTowards Speed Curve"));
 
-                Rect labelRect = new Rect(propertyRect.xMax - 95, propertyRect.yMin, 10, propertyRect.height);
-                GUI.Label(labelRect, "x");
+                    Rect labelRect = new Rect(propertyRect.xMax - 95, propertyRect.yMin, 10, propertyRect.height);
+                    GUI.Label(labelRect, "x");
 
-                Rect multiplierRect = new Rect(propertyRect.xMax - 80, propertyRect.yMin, 80, propertyRect.height);
-                EditorGUI.PropertyField(multiplierRect, serializedObject.FindProperty("m_PositionModel.InterpolateMoveTowardsSpeed"), GUIContent.none);
-                propertyRect.y += EDITOR_LINE_HEIGHT;
+                    Rect multiplierRect = new Rect(propertyRect.xMax - 80, propertyRect.yMin, 80, propertyRect.height);
+                    EditorGUI.PropertyField(multiplierRect, serializedObject.FindProperty("m_PositionModel.InterpolateMoveTowardsSpeed"), GUIContent.none);
+                    propertyRect.y += EDITOR_LINE_HEIGHT;
 
-                EditorGUI.PropertyField(propertyRect, serializedObject.FindProperty("m_PositionModel.InterpolateMoveTowardsAcceleration"),
-                    new GUIContent("Acceleration"));
-                propertyRect.y += EDITOR_LINE_HEIGHT;
+                    EditorGUI.PropertyField(propertyRect, serializedObject.FindProperty("m_PositionModel.InterpolateMoveTowardsAcceleration"),
+                        new GUIContent("Acceleration"));
+                    propertyRect.y += EDITOR_LINE_HEIGHT;
 
-                EditorGUI.PropertyField(propertyRect, serializedObject.FindProperty("m_PositionModel.InterpolateMoveTowardsDeceleration"),
-                    new GUIContent("Deceleration"));
-                propertyRect.y += EDITOR_LINE_HEIGHT;
-                break;*/
+                    EditorGUI.PropertyField(propertyRect, serializedObject.FindProperty("m_PositionModel.InterpolateMoveTowardsDeceleration"),
+                        new GUIContent("Deceleration"));
+                    propertyRect.y += EDITOR_LINE_HEIGHT;
+                    break;*/
         }
     }
 
@@ -333,7 +331,7 @@ public class PhotonTransformViewEditor : Editor
 
         SerializedProperty interpolateRotationProperty = serializedObject.FindProperty("m_RotationModel.InterpolateOption");
         PhotonTransformViewRotationModel.InterpolateOptions interpolateOption =
-            (PhotonTransformViewRotationModel.InterpolateOptions) interpolateRotationProperty.enumValueIndex;
+            (PhotonTransformViewRotationModel.InterpolateOptions)interpolateRotationProperty.enumValueIndex;
 
         float containerHeight = 20;
 
@@ -362,6 +360,7 @@ public class PhotonTransformViewEditor : Editor
                 EditorGUI.PropertyField(propertyRect, serializedObject.FindProperty("m_RotationModel.InterpolateRotateTowardsSpeed"),
                     new GUIContent("RotateTowards Speed"));
                 break;
+
             case PhotonTransformViewRotationModel.InterpolateOptions.Lerp:
                 EditorGUI.PropertyField(propertyRect, serializedObject.FindProperty("m_RotationModel.InterpolateLerpSpeed"), new GUIContent("Lerp Speed"));
                 break;
@@ -381,7 +380,7 @@ public class PhotonTransformViewEditor : Editor
         }
 
         SerializedProperty interpolateScaleProperty = serializedObject.FindProperty("m_ScaleModel.InterpolateOption");
-        PhotonTransformViewScaleModel.InterpolateOptions interpolateOption = (PhotonTransformViewScaleModel.InterpolateOptions) interpolateScaleProperty.enumValueIndex;
+        PhotonTransformViewScaleModel.InterpolateOptions interpolateOption = (PhotonTransformViewScaleModel.InterpolateOptions)interpolateScaleProperty.enumValueIndex;
 
         float containerHeight = EDITOR_LINE_HEIGHT;
 
@@ -410,6 +409,7 @@ public class PhotonTransformViewEditor : Editor
                 EditorGUI.PropertyField(propertyRect, serializedObject.FindProperty("m_ScaleModel.InterpolateMoveTowardsSpeed"),
                     new GUIContent("MoveTowards Speed"));
                 break;
+
             case PhotonTransformViewScaleModel.InterpolateOptions.Lerp:
                 EditorGUI.PropertyField(propertyRect, serializedObject.FindProperty("m_ScaleModel.InterpolateLerpSpeed"), new GUIContent("Lerp Speed"));
                 break;

@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using System.Collections;
-using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class PickupDemoGui : MonoBehaviour
 {
@@ -10,8 +8,6 @@ public class PickupDemoGui : MonoBehaviour
     public bool ShowTeams;
     public float DropOffset = 0.5f;
 
-
-
     public void OnGUI()
     {
         if (!PhotonNetwork.inRoom)
@@ -19,12 +15,10 @@ public class PickupDemoGui : MonoBehaviour
             return;
         }
 
-
         if (this.ShowScores)
         {
             GUILayout.Label("Your Score: " + PhotonNetwork.player.GetScore());
         }
-
 
         if (this.ShowDropButton)
         {
@@ -36,7 +30,7 @@ public class PickupDemoGui : MonoBehaviour
                     {
                         item.Drop();    // drops the item at the place where it originates
                     }
-                    
+
                     GameObject playerCharGo = PhotonNetwork.player.TagObject as GameObject;
                     if (playerCharGo != null && GUILayout.Button("Drop here " + item.name))
                     {
@@ -45,13 +39,12 @@ public class PickupDemoGui : MonoBehaviour
                         random.y = 0;
                         random = random.normalized;
                         Vector3 itempos = playerCharGo.transform.position + this.DropOffset * random;
-                        
+
                         item.Drop(itempos);
                     }
                 }
             }
         }
-
 
         if (this.ShowTeams)
         {

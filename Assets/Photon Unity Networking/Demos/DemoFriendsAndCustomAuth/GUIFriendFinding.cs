@@ -1,29 +1,24 @@
 using UnityEngine;
-using System.Collections;
 
 public class GUIFriendFinding : MonoBehaviour
 {
     private string[] friendListOfSomeCommunity;
     public Rect GuiRect;
 
-
-    void Start()
+    private void Start()
     {
         // If a user should be "findable", the client must set a playerName before connecting.
         // This is then used during connect and the client can be found by others.
         // Setting the playerName before connect, enables others to locate your game:
         PhotonNetwork.playerName = "usr" + (int)Random.Range(0, 9);
 
-
         // Photon Cloud does not implement community features for users but can work with external friends lists.
         // We assume you get some list of IDs of your friends.
         friendListOfSomeCommunity = FetchFriendsFromCommunity();
 
-
         GuiRect = new Rect(Screen.width / 4, 80, Screen.width / 2, Screen.height - 100);
     }
 
-    
     // In this demo, wo just make up some names instead of connecting somewhere
     public static string[] FetchFriendsFromCommunity()
     {
@@ -42,31 +37,27 @@ public class GUIFriendFinding : MonoBehaviour
         return friendsList;
     }
 
-
     public void OnUpdatedFriendList()
     {
         Debug.Log("OnUpdatedFriendList is called when the list PhotonNetwork.Friends is refreshed.");
     }
 
-
     public void OnGUI()
     {
         if (!PhotonNetwork.connectedAndReady || PhotonNetwork.Server != ServerConnection.MasterServer)
         {
-            // this feature is only available on the Master Client. Check either: insideLobby or 
-            // PhotonNetwork.connectionStateDetailed == PeerState.Authenticated or 
+            // this feature is only available on the Master Client. Check either: insideLobby or
+            // PhotonNetwork.connectionStateDetailed == PeerState.Authenticated or
             // PhotonNetwork.inRoomLobby
 
             // for simplicity (and cause we know we WILL join the lobby, we can just check that)
             return;
         }
 
-
         GUILayout.BeginArea(GuiRect);
 
         GUILayout.Label("Your (random) name: " + PhotonNetwork.playerName);
-        GUILayout.Label("Your friends: " + string.Join(", ",this.friendListOfSomeCommunity));
-
+        GUILayout.Label("Your friends: " + string.Join(", ", this.friendListOfSomeCommunity));
 
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("Find Friends"))
@@ -78,7 +69,6 @@ public class GUIFriendFinding : MonoBehaviour
             PhotonNetwork.CreateRoom(null); // just a random room
         }
         GUILayout.EndHorizontal();
-
 
         if (PhotonNetwork.Friends != null)
         {

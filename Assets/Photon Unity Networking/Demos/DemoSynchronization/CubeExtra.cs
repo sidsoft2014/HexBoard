@@ -1,21 +1,19 @@
-// 
-// This script calculates how fast the object moved between any two consecutive updates. 
+//
+// This script calculates how fast the object moved between any two consecutive updates.
 // Assuming that the movement stays about the same, we can move the local copy of a cube fairly well.
 //
-// Note that CubeExtra doesn't lag as much as Interpolation. 
+// Note that CubeExtra doesn't lag as much as Interpolation.
 // Based on what we know as given, we move our cube to a guessed (!) position where it probably is.
-// As consequence, you will notice that this "simulation" does overshoot and speed might be higher/lower 
+// As consequence, you will notice that this "simulation" does overshoot and speed might be higher/lower
 // than in the original.
 //
-// This extrapolation script uses only position updates. This is very lean. 
+// This extrapolation script uses only position updates. This is very lean.
 // The controlling client could calculate speed and send that, but it's not needed!
-// 
-
+//
 
 using UnityEngine;
 
-
-[RequireComponent(typeof (PhotonView))]
+[RequireComponent(typeof(PhotonView))]
 public class CubeExtra : Photon.MonoBehaviour
 {
     [Range(0.9f, 1.1f)]
@@ -23,16 +21,15 @@ public class CubeExtra : Photon.MonoBehaviour
 
     // some internal values. see comments below
     private Vector3 latestCorrectPos = Vector3.zero;
+
     private Vector3 movementVector = Vector3.zero;
     private Vector3 errorVector = Vector3.zero;
     private double lastTime = 0;
-
 
     public void Awake()
     {
         this.latestCorrectPos = transform.position;
     }
-
 
     // this method is called by PUN when this script is being "observed" by a PhotonView (setup in inspector)
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -52,7 +49,6 @@ public class CubeExtra : Photon.MonoBehaviour
             double timeDiffOfUpdates = info.timestamp - this.lastTime;  // the time that passed after the sender sent it's previous update
             this.lastTime = info.timestamp;
 
-
             // the movementVector calculates how far the "original" cube moved since it sent the last update.
             // we calculate this based on the sender's timing, so we exclude network lag. that makes our movement smoother.
             this.movementVector = (updatedLocalPos - this.latestCorrectPos) / (float)timeDiffOfUpdates;
@@ -61,18 +57,16 @@ public class CubeExtra : Photon.MonoBehaviour
             // with this, we don't have to correct our cube's position with a new update (which introduces visible, hard stuttering).
             this.errorVector = (updatedLocalPos - transform.localPosition) / (float)timeDiffOfUpdates;
 
-            
             // next time we get an update, we need this update's position:
             this.latestCorrectPos = updatedLocalPos;
         }
     }
 
-
     public void Update()
     {
         if (photonView.isMine)
         {
-            return; // if this object is under our control, we don't need to apply received position-updates 
+            return; // if this object is under our control, we don't need to apply received position-updates
         }
 
         // we move the object, based on the movement it did between the last two updates.

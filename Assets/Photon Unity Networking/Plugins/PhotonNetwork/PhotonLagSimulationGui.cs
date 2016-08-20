@@ -3,10 +3,8 @@
 /// <summary>Part of the [Optional GUI](@ref optionalGui).</summary>
 #pragma warning restore 1587
 
-
 using ExitGames.Client.Photon;
 using UnityEngine;
-
 
 /// <summary>
 /// This MonoBehaviour is a basic GUI for the Photon client's network-simulation feature.

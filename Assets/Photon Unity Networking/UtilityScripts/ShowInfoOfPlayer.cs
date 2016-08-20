@@ -1,6 +1,5 @@
 using UnityEngine;
-using System.Collections;
-using ExitGames.Client.Photon;
+
 /// <summary>
 /// Can be attached to a GameObject to show info about the owner of the PhotonView.
 /// </summary>
@@ -17,15 +16,15 @@ public class ShowInfoOfPlayer : Photon.MonoBehaviour
     public Font font;
     public bool DisableOnOwnObjects;
 
-    void Start()
+    private void Start()
     {
         if (font == null)
         {
-            #if UNITY_3_5
+#if UNITY_3_5
             font = (Font)FindObjectsOfTypeIncludingAssets(typeof(Font))[0];
-            #else
+#else
             font = (Font)Resources.FindObjectsOfTypeAll(typeof(Font))[0];
-            #endif
+#endif
             Debug.LogWarning("No font defined. Found font: " + font);
         }
 
@@ -48,7 +47,7 @@ public class ShowInfoOfPlayer : Photon.MonoBehaviour
         }
     }
 
-    void Update()
+    private void Update()
     {
         bool showInfo = !this.DisableOnOwnObjects || this.photonView.isMine;
         if (textGo != null)
@@ -60,11 +59,10 @@ public class ShowInfoOfPlayer : Photon.MonoBehaviour
             return;
         }
 
-        
         PhotonPlayer owner = this.photonView.owner;
         if (owner != null)
         {
-            tm.text = (string.IsNullOrEmpty(owner.name)) ? "player"+owner.ID : owner.name;
+            tm.text = (string.IsNullOrEmpty(owner.name)) ? "player" + owner.ID : owner.name;
         }
         else if (this.photonView.isSceneView)
         {

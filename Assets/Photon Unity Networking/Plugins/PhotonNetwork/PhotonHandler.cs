@@ -7,12 +7,9 @@
 using System;
 using System.Collections;
 using System.Diagnostics;
-using ExitGames.Client.Photon;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
-using Hashtable = ExitGames.Client.Photon.Hashtable;
 using SupportClassPun = ExitGames.Client.Photon.SupportClass;
-
 
 /// <summary>
 /// Internal Monobehaviour that allows Photon to run an Update loop.
@@ -206,13 +203,12 @@ internal class PhotonHandler : Photon.MonoBehaviour
         return sendThreadShouldRun;
     }
 
-
     #region Photon Cloud Ping Evaluation
-
 
     private const string PlayerPrefsKey = "PUNCloudBestRegion";
 
     internal static CloudRegionCode BestRegionCodeCurrently = CloudRegionCode.none; // default to none
+
     internal static CloudRegionCode BestRegionCodeInPreferences
     {
         get
@@ -239,12 +235,10 @@ internal class PhotonHandler : Photon.MonoBehaviour
         }
     }
 
-
-    internal protected static void PingAvailableRegionsAndConnectToBest()
+    protected internal static void PingAvailableRegionsAndConnectToBest()
     {
         SP.StartCoroutine(SP.PingAvailableRegionsCoroutine(true));
     }
-
 
     internal IEnumerator PingAvailableRegionsCoroutine(bool connectToBest)
     {
@@ -278,13 +272,11 @@ internal class PhotonHandler : Photon.MonoBehaviour
             yield return new WaitForSeconds(0.1f); // wait until pinging finished (offline mode won't ping)
         }
 
-
         Region best = pingManager.BestRegion;
         PhotonHandler.BestRegionCodeCurrently = best.Code;
         PhotonHandler.BestRegionCodeInPreferences = best.Code;
 
         Debug.Log("Found best region: " + best.Code + " ping: " + best.Ping + ". Calling ConnectToRegionMaster() is: " + connectToBest);
-
 
         if (connectToBest)
         {
@@ -292,8 +284,5 @@ internal class PhotonHandler : Photon.MonoBehaviour
         }
     }
 
-
-
-    #endregion
-
+    #endregion Photon Cloud Ping Evaluation
 }

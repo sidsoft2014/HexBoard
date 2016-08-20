@@ -1,20 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using ExitGames.Client.Photon;
+﻿using Photon;
 
-public class Player : PhotonPlayer
+public class Player : PunBehaviour
 {
-    public Player(bool isLocal, int actorID, string name)
-        : base(isLocal, actorID, name)
+    public Navigatable[] PlayerPieces;
+
+    public Player()
     {
-
-    }
-
-    protected internal Player(bool isLocal, int actorID, Hashtable properties)
-        : base(isLocal, actorID, properties)
-    {
-
     }
 }

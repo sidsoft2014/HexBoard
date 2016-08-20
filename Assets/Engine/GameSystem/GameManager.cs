@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.Linq;
 
 public class GameManager : MonoBehaviour
 {
@@ -8,9 +6,8 @@ public class GameManager : MonoBehaviour
 
     public HexGrid grid;
 
-
     // Use this for initialization
-    void Start()
+    private void Start()
     {
         if (grid == null)
             grid = FindObjectOfType<HexGrid>();
@@ -23,9 +20,8 @@ public class GameManager : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
-
     }
 
     public MoveType GetMoveType(Navigatable mover, HexCoordinates destination, out Vector3? pos)
@@ -36,7 +32,7 @@ public class GameManager : MonoBehaviour
 
         foreach (var item in navObjs)
         {
-            if(item.CurrentPosition == pos)
+            if (item.CurrentPosition == pos)
             {
                 return MoveType.Attacking;
             }

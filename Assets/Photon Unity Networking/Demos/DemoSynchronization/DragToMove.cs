@@ -1,12 +1,9 @@
-using System.Collections.Generic;
-using ExitGames.Client.Photon;
-using UnityEngine;
 using System.Collections;
-using Hashtable = ExitGames.Client.Photon.Hashtable;
-
+using System.Collections.Generic;
+using UnityEngine;
 
 /// <summary>
-/// This component can be used to move objects along a path. Optionally, the path can be updated by 
+/// This component can be used to move objects along a path. Optionally, the path can be updated by
 /// </summary>
 public class DragToMove : MonoBehaviour
 {
@@ -17,9 +14,8 @@ public class DragToMove : MonoBehaviour
     private Vector3[] cubeStartPositions;
     private int nextPosIndex = 0;
     private float lerpTime = 0.0f;
-    
-    private bool recording;
 
+    private bool recording;
 
     /// <summary>
     /// Initializes the positioning of the objects-to-move.
@@ -34,7 +30,6 @@ public class DragToMove : MonoBehaviour
             this.cubeStartPositions[i] = cube.position;
         }
     }
-
 
     /// <summary>
     /// This actually moves the objects along a defined path (unless a new path is being recorded).
@@ -62,19 +57,18 @@ public class DragToMove : MonoBehaviour
             return;
         }
 
-        
         Vector3 targetPos = PositionsQueue[nextPosIndex];
-        
-        int prevPosIndex = this.nextPosIndex > 0 ? this.nextPosIndex - 1 : PositionsQueue.Count-1;
+
+        int prevPosIndex = this.nextPosIndex > 0 ? this.nextPosIndex - 1 : PositionsQueue.Count - 1;
         Vector3 prevPos = PositionsQueue[prevPosIndex];
-        lerpTime = lerpTime+Time.deltaTime * speed;
+        lerpTime = lerpTime + Time.deltaTime * speed;
 
         for (int i = 0; i < this.cubes.Length; i++)
         {
             Transform cube = this.cubes[i];
-            
+
             Vector3 cubeTargetPos = targetPos + this.cubeStartPositions[i];
-            Vector3 cubePrevPos = prevPos +  this.cubeStartPositions[i];
+            Vector3 cubePrevPos = prevPos + this.cubeStartPositions[i];
 
             cube.transform.position = Vector3.Lerp(cubePrevPos, cubeTargetPos, lerpTime);
         }
@@ -96,7 +90,6 @@ public class DragToMove : MonoBehaviour
         while (Input.GetMouseButton(0) || Input.touchCount > 0)
         {
             yield return new WaitForSeconds(0.1f);
-            
 
             Vector3 v3 = Input.mousePosition;
             if (Input.touchCount > 0)
@@ -105,7 +98,6 @@ public class DragToMove : MonoBehaviour
                 v3 = Input.GetTouch(0).position;
             }
 
-
             Ray inputRay = Camera.main.ScreenPointToRay(v3);
             RaycastHit hit;
             if (Physics.Raycast(inputRay, out hit))
@@ -113,9 +105,8 @@ public class DragToMove : MonoBehaviour
                 PositionsQueue.Add(hit.point);
             }
         }
-        
+
         nextPosIndex = 0;
         recording = false;
     }
-
 }

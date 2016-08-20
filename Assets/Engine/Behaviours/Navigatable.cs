@@ -1,26 +1,25 @@
 ﻿using Photon;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 
 public class Navigatable : PunBehaviour
 {
-    private HexGrid _grid;
-    private GameManager _gm;
+    public float speed = 20;
 
+    private bool _canMove;
     private Vector3 _currentPosition;
+    private GameManager _gm;
+    private HexGrid _grid;
+    private bool _isMoving;
     private Vector3 _nextPosition;
     private Renderer _renderer;
     private Material[] _startingMats;
-    private bool _isMoving;
-    private bool _canMove;
     private float _step;
 
-    public Navigatable() { }
+    public Navigatable()
+    {
+    }
 
-    public float speed = 20;
+    public HexCoordinates CurrentCoordinates { get; private set; }
 
     public Vector3 CurrentPosition
     {
@@ -35,17 +34,44 @@ public class Navigatable : PunBehaviour
             _currentPosition = value;
         }
     }
-    public Vector3 PreviousPosition { get; private set; }
-    public HexCoordinates CurrentCoordinates { get; private set; }
+
     public bool IsSelected { get; private set; }
 
+    public Vector3 PreviousPosition { get; private set; }
+
     #region Unity Overrides
+
     // Awake is called when the script instance is being loaded
     public virtual void Awake()
     {
         _renderer = GetComponent<Renderer>();
         _startingMats = _renderer.materials;
         _step = speed * Time.deltaTime;
+    }
+
+    // OnMouseDown is called when the user has pressed the mouse button while over the GUIElement or Collider
+    public virtual void OnMouseDown()
+    {
+        SetSelected(!IsSelected);
+    }
+
+    // OnMouseEnter is called when the mouse entered the GUIElement or Collider
+    public virtual void OnMouseEnter()
+    {
+        if (IsSelected)
+            return;
+
+        _renderer.material = new Material(_startingMats[0]);
+        _renderer.material.color = Color.yellow;
+    }
+
+    // OnMouseExit is called when the mouse is not any longer over the GUIElement or Collider
+    public virtual void OnMouseExit()
+    {
+        if (IsSelected)
+            return;
+
+        _renderer.materials = _startingMats;
     }
 
     // Start is called just before any of the Update methods is called the first time
@@ -88,47 +114,7 @@ public class Navigatable : PunBehaviour
         }
     }
 
-    // OnMouseDown is called when the user has pressed the mouse button while over the GUIElement or Collider
-    public virtual void OnMouseDown()
-    {
-        SetSelected(!IsSelected);
-    }
-
-    // OnMouseEnter is called when the mouse entered the GUIElement or Collider
-    public virtual void OnMouseEnter()
-    {
-        if (IsSelected)
-            return;
-
-        _renderer.material = new Material(_startingMats[0]);
-        _renderer.material.color = Color.yellow;
-    }
-
-
-    // OnMouseExit is called when the mouse is not any longer over the GUIElement or Collider
-    public virtual void OnMouseExit()
-    {
-        if (IsSelected)
-            return;
-
-        _renderer.materials = _startingMats;
-    }
-
-    #endregion
-
-    public void SetSelected(bool isSelected)
-    {
-        IsSelected = _canMove = isSelected;
-        if (IsSelected)
-        {
-            _renderer.material = new Material(_startingMats[0]);
-            _renderer.material.color = Color.red;
-        }
-        else
-        {
-            _renderer.materials = _startingMats;
-        }
-    }
+    #endregion Unity Overrides
 
     public void HandleInput()
     {
@@ -174,7 +160,7 @@ public class Navigatable : PunBehaviour
         //var vec = _grid.ParseMove((HexCoordinates)hex);
         Vector3? pos;
         var mType = _gm.GetMoveType(this, (HexCoordinates)hex, out pos);
-        if(mType == MoveType.Invalid)
+        if (mType == MoveType.Invalid)
         {
             return;
         }
@@ -183,5 +169,18 @@ public class Navigatable : PunBehaviour
         _nextPosition = (Vector3)pos;
         _isMoving = true;
     }
-}
 
+    public void SetSelected(bool isSelected)
+    {
+        IsSelected = _canMove = isSelected;
+        if (IsSelected)
+        {
+            _renderer.material = new Material(_startingMats[0]);
+            _renderer.material.color = Color.red;
+        }
+        else
+        {
+            _renderer.materials = _startingMats;
+        }
+    }
+}

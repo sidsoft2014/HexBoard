@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
-using System.Collections;
 
-[RequireComponent( typeof( CharacterController ) )]
+[RequireComponent(typeof(CharacterController))]
 public class RPGMovement : MonoBehaviour
 {
     public float ForwardSpeed;
@@ -9,17 +8,17 @@ public class RPGMovement : MonoBehaviour
     public float StrafeSpeed;
     public float RotateSpeed;
 
-    CharacterController m_CharacterController;
-    Vector3 m_LastPosition;
-    Animator m_Animator;
-    PhotonView m_PhotonView;
-    PhotonTransformView m_TransformView;
+    private CharacterController m_CharacterController;
+    private Vector3 m_LastPosition;
+    private Animator m_Animator;
+    private PhotonView m_PhotonView;
+    private PhotonTransformView m_TransformView;
 
-    float m_AnimatorSpeed;
-    Vector3 m_CurrentMovement;
-    float m_CurrentTurnSpeed;
+    private float m_AnimatorSpeed;
+    private Vector3 m_CurrentMovement;
+    private float m_CurrentTurnSpeed;
 
-    void Start()
+    private void Start()
     {
         m_CharacterController = GetComponent<CharacterController>();
         m_Animator = GetComponent<Animator>();
@@ -27,9 +26,9 @@ public class RPGMovement : MonoBehaviour
         m_TransformView = GetComponent<PhotonTransformView>();
     }
 
-    void Update()
+    private void Update()
     {
-        if( m_PhotonView.isMine == true )
+        if (m_PhotonView.isMine == true)
         {
             ResetSpeedValues();
 
@@ -48,99 +47,99 @@ public class RPGMovement : MonoBehaviour
         UpdateAnimation();
     }
 
-    void UpdateAnimation()
+    private void UpdateAnimation()
     {
         Vector3 movementVector = transform.position - m_LastPosition;
 
-        float speed = Vector3.Dot( movementVector.normalized, transform.forward );
-        float direction = Vector3.Dot( movementVector.normalized, transform.right );
+        float speed = Vector3.Dot(movementVector.normalized, transform.forward);
+        float direction = Vector3.Dot(movementVector.normalized, transform.right);
 
-        if( Mathf.Abs( speed ) < 0.2f )
+        if (Mathf.Abs(speed) < 0.2f)
         {
             speed = 0f;
         }
 
-        if( speed > 0.6f )
+        if (speed > 0.6f)
         {
             speed = 1f;
             direction = 0f;
         }
 
-        if( speed >= 0f )
+        if (speed >= 0f)
         {
-            if( Mathf.Abs( direction ) > 0.7f )
+            if (Mathf.Abs(direction) > 0.7f)
             {
                 speed = 1f;
             }
         }
 
-        m_AnimatorSpeed = Mathf.MoveTowards( m_AnimatorSpeed, speed, Time.deltaTime * 5f );
+        m_AnimatorSpeed = Mathf.MoveTowards(m_AnimatorSpeed, speed, Time.deltaTime * 5f);
 
-        m_Animator.SetFloat( "Speed", m_AnimatorSpeed );
-        m_Animator.SetFloat( "Direction", direction );
+        m_Animator.SetFloat("Speed", m_AnimatorSpeed);
+        m_Animator.SetFloat("Direction", direction);
 
         m_LastPosition = transform.position;
     }
 
-    void ResetSpeedValues()
+    private void ResetSpeedValues()
     {
         m_CurrentMovement = Vector3.zero;
         m_CurrentTurnSpeed = 0;
     }
 
-    void ApplySynchronizedValues()
+    private void ApplySynchronizedValues()
     {
-        m_TransformView.SetSynchronizedValues( m_CurrentMovement, m_CurrentTurnSpeed );
+        m_TransformView.SetSynchronizedValues(m_CurrentMovement, m_CurrentTurnSpeed);
     }
 
-    void ApplyGravityToCharacterController()
+    private void ApplyGravityToCharacterController()
     {
-        m_CharacterController.Move( transform.up * Time.deltaTime * -9.81f );
+        m_CharacterController.Move(transform.up * Time.deltaTime * -9.81f);
     }
 
-    void MoveCharacterController()
+    private void MoveCharacterController()
     {
-        m_CharacterController.Move( m_CurrentMovement * Time.deltaTime );
+        m_CharacterController.Move(m_CurrentMovement * Time.deltaTime);
     }
 
-    void UpdateForwardMovement()
+    private void UpdateForwardMovement()
     {
-        if( Input.GetKey( KeyCode.W ) || Input.GetAxisRaw("Vertical") > 0.1f )
+        if (Input.GetKey(KeyCode.W) || Input.GetAxisRaw("Vertical") > 0.1f)
         {
             m_CurrentMovement = transform.forward * ForwardSpeed;
         }
     }
 
-    void UpdateBackwardMovement()
+    private void UpdateBackwardMovement()
     {
-        if( Input.GetKey( KeyCode.S ) || Input.GetAxisRaw("Vertical") < -0.1f )
+        if (Input.GetKey(KeyCode.S) || Input.GetAxisRaw("Vertical") < -0.1f)
         {
             m_CurrentMovement = -transform.forward * BackwardSpeed;
         }
     }
 
-    void UpdateStrafeMovement()
+    private void UpdateStrafeMovement()
     {
-        if( Input.GetKey( KeyCode.Q ) == true )
+        if (Input.GetKey(KeyCode.Q) == true)
         {
             m_CurrentMovement = -transform.right * StrafeSpeed;
         }
 
-        if( Input.GetKey( KeyCode.E ) == true )
+        if (Input.GetKey(KeyCode.E) == true)
         {
             m_CurrentMovement = transform.right * StrafeSpeed;
         }
     }
 
-    void UpdateRotateMovement()
+    private void UpdateRotateMovement()
     {
-        if( Input.GetKey( KeyCode.A ) || Input.GetAxisRaw("Horizontal") < -0.1f )
+        if (Input.GetKey(KeyCode.A) || Input.GetAxisRaw("Horizontal") < -0.1f)
         {
             m_CurrentTurnSpeed = -RotateSpeed;
             transform.Rotate(0.0f, -RotateSpeed * Time.deltaTime, 0.0f);
         }
 
-        if( Input.GetKey( KeyCode.D ) || Input.GetAxisRaw("Horizontal") > 0.1f )
+        if (Input.GetKey(KeyCode.D) || Input.GetAxisRaw("Horizontal") > 0.1f)
         {
             m_CurrentTurnSpeed = RotateSpeed;
             transform.Rotate(0.0f, RotateSpeed * Time.deltaTime, 0.0f);

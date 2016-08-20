@@ -5,7 +5,6 @@ public class OnDoubleclickDestroy : Photon.MonoBehaviour
     private float timeOfLastClick;
     private const float ClickDeltaForDoubleclick = 0.2f;
 
-
     // called by InputToEvent.
     // we use a short timeout to detect double clicks.
     // on double click, the networked object gets destroyed (on all clients).

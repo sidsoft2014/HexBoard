@@ -8,136 +8,132 @@
 // <author>developer@exitgames.com</author>
 // --------------------------------------------------------------------------------------------------------------------
 
-
 using UnityEngine;
 using UnityEngine.UI;
 
-using System.Collections;
-
 namespace ExitGames.Demos.DemoAnimator
 {
-	/// <summary>
-	/// Player UI. Constraint the UI to follow a PlayerManager GameObject in the world,
-	/// Affect a slider and text to display Player's name and health
-	/// </summary>
-	public class PlayerUI : MonoBehaviour {
+    /// <summary>
+    /// Player UI. Constraint the UI to follow a PlayerManager GameObject in the world,
+    /// Affect a slider and text to display Player's name and health
+    /// </summary>
+    public class PlayerUI : MonoBehaviour
+    {
+        #region Public Properties
 
-		#region Public Properties
+        [Tooltip("Pixel offset from the player target")]
+        public Vector3 ScreenOffset = new Vector3(0f, 30f, 0f);
 
-		[Tooltip("Pixel offset from the player target")]
-		public Vector3 ScreenOffset = new Vector3(0f,30f,0f);
+        [Tooltip("UI Text to display Player's Name")]
+        public Text PlayerNameText;
 
-		[Tooltip("UI Text to display Player's Name")]
-		public Text PlayerNameText;
+        [Tooltip("UI Slider to display Player's Health")]
+        public Slider PlayerHealthSlider;
 
-		[Tooltip("UI Slider to display Player's Health")]
-		public Slider PlayerHealthSlider;
+        #endregion Public Properties
 
-		#endregion
+        #region Private Properties
 
-		#region Private Properties
+        private PlayerManager _target;
 
-		PlayerManager _target;
+        private float _characterControllerHeight = 0f;
 
-		float _characterControllerHeight = 0f;
+        private Transform _targetTransform;
 
-		Transform _targetTransform;
+        private Renderer _targetRenderer;
 
-		Renderer _targetRenderer;
+        private Vector3 _targetPosition;
 
-		Vector3 _targetPosition;
+        #endregion Private Properties
 
-		#endregion
+        #region MonoBehaviour Messages
 
-		#region MonoBehaviour Messages
-		
-		/// <summary>
-		/// MonoBehaviour method called on GameObject by Unity during early initialization phase
-		/// </summary>
-		void Awake(){
+        /// <summary>
+        /// MonoBehaviour method called on GameObject by Unity during early initialization phase
+        /// </summary>
+        private void Awake()
+        {
+            this.GetComponent<Transform>().SetParent(GameObject.Find("Canvas").GetComponent<Transform>());
+        }
 
-			this.GetComponent<Transform>().SetParent (GameObject.Find("Canvas").GetComponent<Transform>());
-		}
+        /// <summary>
+        /// MonoBehaviour method called on GameObject by Unity on every frame.
+        /// update the health slider to reflect the Player's health
+        /// </summary>
+        private void Update()
+        {
+            // Destroy itself if the target is null, It's a fail safe when Photon is destroying Instances of a Player over the network
+            if (_target == null)
+            {
+                Destroy(this.gameObject);
+                return;
+            }
 
-		/// <summary>
-		/// MonoBehaviour method called on GameObject by Unity on every frame.
-		/// update the health slider to reflect the Player's health
-		/// </summary>
-		void Update()
-		{
-			// Destroy itself if the target is null, It's a fail safe when Photon is destroying Instances of a Player over the network
-			if (_target == null) {
-				Destroy(this.gameObject);
-				return;
-			}
+            // Reflect the Player Health
+            if (PlayerHealthSlider != null)
+            {
+                PlayerHealthSlider.value = _target.Health;
+            }
+        }
 
+        /// <summary>
+        /// MonoBehaviour method called after all Update functions have been called. This is useful to order script execution.
+        /// In our case since we are following a moving GameObject, we need to proceed after the player was moved during a particular frame.
+        /// </summary>
+        private void LateUpdate()
+        {
+            // Do not show the UI if we are not visible to the camera, thus avoid potential bugs with seeing the UI, but not the player itself.
+            if (_targetRenderer != null)
+            {
+                this.gameObject.SetActive(_targetRenderer.isVisible);
+            }
 
-			// Reflect the Player Health
-			if (PlayerHealthSlider != null) {
-				PlayerHealthSlider.value = _target.Health;
-			}
-		}
+            // #Critical
+            // Follow the Target GameObject on screen.
+            if (_targetTransform != null)
+            {
+                _targetPosition = _targetTransform.position;
+                _targetPosition.y += _characterControllerHeight;
 
-		/// <summary>
-		/// MonoBehaviour method called after all Update functions have been called. This is useful to order script execution.
-		/// In our case since we are following a moving GameObject, we need to proceed after the player was moved during a particular frame.
-		/// </summary>
-		void LateUpdate () {
+                this.transform.position = Camera.main.WorldToScreenPoint(_targetPosition) + ScreenOffset;
+            }
+        }
 
-			// Do not show the UI if we are not visible to the camera, thus avoid potential bugs with seeing the UI, but not the player itself.
-			if (_targetRenderer!=null) {
-				this.gameObject.SetActive(_targetRenderer.isVisible);
-			}
-			
-			// #Critical
-			// Follow the Target GameObject on screen.
-			if (_targetTransform!=null)
-			{
-				_targetPosition = _targetTransform.position;
-				_targetPosition.y += _characterControllerHeight;
-				
-				this.transform.position = Camera.main.WorldToScreenPoint (_targetPosition) + ScreenOffset;
-			}
+        #endregion MonoBehaviour Messages
 
-		}
+        #region Public Methods
 
+        /// <summary>
+        /// Assigns a Player Target to Follow and represent.
+        /// </summary>
+        /// <param name="target">Target.</param>
+        public void SetTarget(PlayerManager target)
+        {
+            if (target == null)
+            {
+                Debug.LogError("<Color=Red><b>Missing</b></Color> PlayMakerManager target for PlayerUI.SetTarget.", this);
+                return;
+            }
 
+            // Cache references for efficiency because we are going to reuse them.
+            _target = target;
+            _targetTransform = _target.GetComponent<Transform>();
+            _targetRenderer = _target.GetComponent<Renderer>();
 
+            CharacterController _characterController = _target.GetComponent<CharacterController>();
 
-		#endregion
+            // Get data from the Player that won't change during the lifetime of this Component
+            if (_characterController != null)
+            {
+                _characterControllerHeight = _characterController.height;
+            }
 
-		#region Public Methods
+            if (PlayerNameText != null)
+            {
+                PlayerNameText.text = _target.photonView.owner.name;
+            }
+        }
 
-		/// <summary>
-		/// Assigns a Player Target to Follow and represent.
-		/// </summary>
-		/// <param name="target">Target.</param>
-		public void SetTarget(PlayerManager target){
-
-			if (target == null) {
-				Debug.LogError("<Color=Red><b>Missing</b></Color> PlayMakerManager target for PlayerUI.SetTarget.",this);
-				return;
-			}
-
-			// Cache references for efficiency because we are going to reuse them.
-			_target = target;
-			_targetTransform = _target.GetComponent<Transform>();
-			_targetRenderer = _target.GetComponent<Renderer>();
-
-
-			CharacterController _characterController = _target.GetComponent<CharacterController> ();
-
-			// Get data from the Player that won't change during the lifetime of this Component
-			if (_characterController != null){
-				_characterControllerHeight = _characterController.height;
-			}
-
-			if (PlayerNameText != null) {
-				PlayerNameText.text = _target.photonView.owner.name;
-			}
-		}
-
-		#endregion
-
-	}
+        #endregion Public Methods
+    }
 }

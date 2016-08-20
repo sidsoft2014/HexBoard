@@ -2,46 +2,45 @@ using UnityEngine;
 
 public class AudioRpc : Photon.MonoBehaviour
 {
-
     public AudioClip marco;
     public AudioClip polo;
 
-    AudioSource m_Source;
+    private AudioSource m_Source;
 
-    void Awake()
+    private void Awake()
     {
         m_Source = GetComponent<AudioSource>();
     }
 
     [PunRPC]
-    void Marco()
+    private void Marco()
     {
-        if( !this.enabled )
+        if (!this.enabled)
         {
             return;
         }
 
-        Debug.Log( "Marco" );
+        Debug.Log("Marco");
 
         m_Source.clip = marco;
         m_Source.Play();
     }
 
     [PunRPC]
-    void Polo()
+    private void Polo()
     {
-        if( !this.enabled )
+        if (!this.enabled)
         {
             return;
         }
 
-        Debug.Log( "Polo" );
+        Debug.Log("Polo");
 
         m_Source.clip = polo;
         m_Source.Play();
     }
 
-    void OnApplicationFocus( bool focus )
+    private void OnApplicationFocus(bool focus)
     {
         this.enabled = focus;
     }

@@ -81,7 +81,7 @@ public class WorkerMenu : MonoBehaviour
             if (this.connectFailed)
             {
                 GUILayout.Label("Connection failed. Check setup and use Setup Wizard to fix configuration.");
-                GUILayout.Label(String.Format("Server: {0}", new object[] {PhotonNetwork.ServerAddress}));
+                GUILayout.Label(String.Format("Server: {0}", new object[] { PhotonNetwork.ServerAddress }));
                 GUILayout.Label("AppId: " + PhotonNetwork.PhotonServerSettings.AppID.Substring(0, 8) + "****"); // only show/log first 8 characters. never log the full AppId.
 
                 if (GUILayout.Button("Try Again", GUILayout.Width(100)))
@@ -94,7 +94,7 @@ public class WorkerMenu : MonoBehaviour
             return;
         }
 
-        Rect content = new Rect((Screen.width - this.WidthAndHeight.x)/2, (Screen.height - this.WidthAndHeight.y)/2, this.WidthAndHeight.x, this.WidthAndHeight.y);
+        Rect content = new Rect((Screen.width - this.WidthAndHeight.x) / 2, (Screen.height - this.WidthAndHeight.y) / 2, this.WidthAndHeight.x, this.WidthAndHeight.y);
         GUI.Box(content, "Join or Create Room");
         GUILayout.BeginArea(content);
 
@@ -137,7 +137,6 @@ public class WorkerMenu : MonoBehaviour
 
         GUILayout.EndHorizontal();
 
-
         if (!string.IsNullOrEmpty(ErrorDialog))
         {
             GUILayout.Label(ErrorDialog);
@@ -160,7 +159,6 @@ public class WorkerMenu : MonoBehaviour
         {
             PhotonNetwork.JoinRandomRoom();
         }
-
 
         GUILayout.EndHorizontal();
 

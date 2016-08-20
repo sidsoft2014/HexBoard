@@ -9,9 +9,8 @@
 // <author>developer@exitgames.com</author>
 // ----------------------------------------------------------------------------
 
-using System;
 using ExitGames.Client.Photon;
-
+using System;
 
 /// <summary>
 /// A simplified room with just the info required to list and join, used for the room listing in the lobby.
@@ -166,7 +165,6 @@ public class RoomInfo
         return this.nameField.GetHashCode();
     }
 
-
     /// <summary>Simple printingin method.</summary>
     /// <returns>Summary of this RoomInfo instance.</returns>
     public override string ToString()
@@ -232,7 +230,7 @@ public class RoomInfo
         {
             this.serverSideMasterClient = true;
             bool isUpdate = this.masterClientIdField != 0;
-            this.masterClientIdField = (int) propertiesToCache[GamePropertyKey.MasterClientId];
+            this.masterClientIdField = (int)propertiesToCache[GamePropertyKey.MasterClientId];
             if (isUpdate)
             {
                 PhotonNetwork.networkingPeer.UpdateMasterClient();

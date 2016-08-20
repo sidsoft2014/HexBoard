@@ -1,14 +1,12 @@
 ﻿using UnityEngine;
-using System.Collections;
 using UnityEngine.UI;
 
-public class RpsDebug : MonoBehaviour {
-
+public class RpsDebug : MonoBehaviour
+{
     [SerializeField]
     private Button ConnectionDebugButton;
 
     public bool ShowConnectionDebug;
-
 
     public void ToggleConnectionDebug()
     {

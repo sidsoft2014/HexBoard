@@ -12,13 +12,12 @@
 #define UNITY_MIN_5_3
 #endif
 
-
-using UnityEditor.SceneManagement;
-using UnityEngine;
-using UnityEditor;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEngine;
 
 public class PhotonConverter : Photon.MonoBehaviour
 {
@@ -30,11 +29,14 @@ public class PhotonConverter : Photon.MonoBehaviour
         {
             case 0:
                 break;
+
             case 1:
                 return;
+
             case 2:
                 PickFolderAndConvertScripts();
                 return;
+
             default:
                 return;
         }
@@ -55,7 +57,6 @@ public class PhotonConverter : Photon.MonoBehaviour
         //Convert NetworkViews to PhotonViews in Project prefabs
         //Ask the user if we can move all prefabs to a resources folder
         bool movePrefabs = EditorUtility.DisplayDialog("Conversion", "Can all prefabs that use a PhotonView be moved to a Resources/ folder? You need this if you use Network.Instantiate.", "Yes", "No");
-
 
         string[] prefabs = Directory.GetFiles("Assets/", "*.prefab", SearchOption.AllDirectories);
         foreach (string prefab in prefabs)
@@ -144,7 +145,6 @@ public class PhotonConverter : Photon.MonoBehaviour
         EditorUtility.DisplayDialog("Script Conversion", "Scripts are now converted to PUN.\n\nYou will need to update\n- scenes\n- components\n- prefabs and\n- add \"PhotonNetwork.ConnectWithDefaultSettings();\"", "Ok");
     }
 
-
     public static List<string> GetScriptsInFolder(string folder)
     {
         List<string> scripts = new List<string>();
@@ -163,7 +163,7 @@ public class PhotonConverter : Photon.MonoBehaviour
         return scripts;
     }
 
-    static void ConvertScripts(List<string> scriptPathList)
+    private static void ConvertScripts(List<string> scriptPathList)
     {
         bool ignoreWarningIsLogged = false;
 
@@ -192,16 +192,15 @@ public class PhotonConverter : Photon.MonoBehaviour
         }
     }
 
-    static void ConvertToPhotonAPI(string file)
+    private static void ConvertToPhotonAPI(string file)
     {
         string text = File.ReadAllText(file);
 
         bool isJS = file.Contains(".js");
 
         file = file.Replace("\\", "/"); // Get Class name for JS
-        string className = file.Substring(file.LastIndexOf("/")+1);
+        string className = file.Substring(file.LastIndexOf("/") + 1);
         className = className.Substring(0, className.IndexOf("."));
-
 
         //REGEXP STUFF
         //Valid are: Space { } , /n /r
@@ -209,7 +208,6 @@ public class PhotonConverter : Photon.MonoBehaviour
         string NOT_VAR_WITH_DOT = @"([^A-Za-z0-9_]+)";
 
         //string VAR_NONARRAY = @"[^A-Za-z0-9_]";
-
 
         //NetworkView
         {
@@ -258,7 +256,6 @@ public class PhotonConverter : Photon.MonoBehaviour
 
             //Variables
             {
-
                 text = PregReplace(text, NOT_VAR_WITH_DOT + "Network.connections" + NOT_VAR_WITH_DOT, "$1PhotonNetwork.playerList$2");
                 text = PregReplace(text, NOT_VAR_WITH_DOT + "Network.isServer" + NOT_VAR_WITH_DOT, "$1PhotonNetwork.isMasterClient$2");
                 text = PregReplace(text, NOT_VAR_WITH_DOT + "Network.isClient" + NOT_VAR_WITH_DOT, "$1PhotonNetwork.isNonMasterClientInRoom$2");
@@ -298,13 +295,11 @@ public class PhotonConverter : Photon.MonoBehaviour
             //Overall
             text = PregReplace(text, NOT_VAR_WITH_DOT + "Network" + NOT_VAR_WITH_DOT, "$1PhotonNetwork$2");
 
+            //Changed methods
+            string ignoreMe = @"([A-Za-z0-9_\[\]\(\) ]+)";
 
-        //Changed methods
-             string ignoreMe = @"([A-Za-z0-9_\[\]\(\) ]+)";
-
-         text = PregReplace(text, NOT_VAR_WITH_DOT + "PhotonNetwork.GetPing\\(" + ignoreMe+"\\);", "$1PhotonNetwork.GetPing();");
-        text = PregReplace(text, NOT_VAR_WITH_DOT + "PhotonNetwork.CloseConnection\\(" + ignoreMe+","+ignoreMe+"\\);", "$1PhotonNetwork.CloseConnection($2);");
-
+            text = PregReplace(text, NOT_VAR_WITH_DOT + "PhotonNetwork.GetPing\\(" + ignoreMe + "\\);", "$1PhotonNetwork.GetPing();");
+            text = PregReplace(text, NOT_VAR_WITH_DOT + "PhotonNetwork.CloseConnection\\(" + ignoreMe + "," + ignoreMe + "\\);", "$1PhotonNetwork.CloseConnection($2);");
         }
 
         //General
@@ -325,7 +320,6 @@ public class PhotonConverter : Photon.MonoBehaviour
 
         File.WriteAllText(file, text);
     }
-
 
     ///  default path: "Assets"
     public static void ConvertRpcAttribute(string path)
@@ -356,7 +350,7 @@ public class PhotonConverter : Photon.MonoBehaviour
         }
     }
 
-    static string PregReplace(string input, string[] pattern, string[] replacements)
+    private static string PregReplace(string input, string[] pattern, string[] replacements)
     {
         if (replacements.Length != pattern.Length)
             Debug.LogError("Replacement and Pattern Arrays must be balanced");
@@ -368,13 +362,13 @@ public class PhotonConverter : Photon.MonoBehaviour
 
         return input;
     }
-    static string PregReplace(string input, string pattern, string replacement)
+
+    private static string PregReplace(string input, string pattern, string replacement)
     {
         return Regex.Replace(input, pattern, replacement);
-
     }
 
-    static void EnsureFolder(string path)
+    private static void EnsureFolder(string path)
     {
         if (!Directory.Exists(path))
         {
@@ -384,7 +378,7 @@ public class PhotonConverter : Photon.MonoBehaviour
         }
     }
 
-    static int ConvertNetworkView(NetworkView[] netViews, bool isScene)
+    private static int ConvertNetworkView(NetworkView[] netViews, bool isScene)
     {
         for (int i = netViews.Length - 1; i >= 0; i--)
         {
@@ -401,11 +395,11 @@ public class PhotonConverter : Photon.MonoBehaviour
                 int oldViewID = int.Parse(str);
 
                 view.viewID = oldViewID;
-                
-                #if !UNITY_MIN_5_3
+
+#if !UNITY_MIN_5_3
                 EditorUtility.SetDirty(view);
                 EditorUtility.SetDirty(view.gameObject);
-                #endif
+#endif
             }
             view.observed = netView.observed;
             if (netView.stateSynchronization == NetworkStateSynchronization.Unreliable)
@@ -428,14 +422,13 @@ public class PhotonConverter : Photon.MonoBehaviour
         return netViews.Length;
     }
 
-    static void Output(string str)
+    private static void Output(string str)
     {
         Debug.Log(((int)EditorApplication.timeSinceStartup) + " " + str);
     }
 
-    static void ConversionError(string file, string str)
+    private static void ConversionError(string file, string str)
     {
         Debug.LogError("Scrip conversion[" + file + "]: " + str);
     }
-
 }

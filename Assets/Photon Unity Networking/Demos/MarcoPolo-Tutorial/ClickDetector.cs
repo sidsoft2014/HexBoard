@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class ClickDetector : MonoBehaviour
 {
-
     public void Update()
     {
         // if this player is not "it", the player can't tag anyone, so don't do anything on collision
@@ -27,11 +26,11 @@ public class ClickDetector : MonoBehaviour
     private GameObject RaycastObject(Vector2 screenPos)
     {
         RaycastHit info;
-        #if UNITY_3_5
+#if UNITY_3_5
         Camera cam = Camera.mainCamera;
-        #else
+#else
         Camera cam = Camera.main;
-        #endif
+#endif
 
         if (Physics.Raycast(cam.ScreenPointToRay(screenPos), out info, 200))
         {

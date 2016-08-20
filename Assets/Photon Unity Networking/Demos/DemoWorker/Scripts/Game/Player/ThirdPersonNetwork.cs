@@ -1,24 +1,23 @@
 using UnityEngine;
-using System.Collections;
 
 public class ThirdPersonNetwork : Photon.MonoBehaviour
 {
-    ThirdPersonCamera cameraScript;
-    ThirdPersonController controllerScript;
+    private ThirdPersonCamera cameraScript;
+    private ThirdPersonController controllerScript;
 
-    void Awake()
+    private void Awake()
     {
         cameraScript = GetComponent<ThirdPersonCamera>();
         controllerScript = GetComponent<ThirdPersonController>();
 
-         if (photonView.isMine)
+        if (photonView.isMine)
         {
             //MINE: local player, simply enable the local scripts
             cameraScript.enabled = true;
             controllerScript.enabled = true;
         }
         else
-        {           
+        {
             cameraScript.enabled = false;
 
             controllerScript.enabled = true;
@@ -28,14 +27,14 @@ public class ThirdPersonNetwork : Photon.MonoBehaviour
         gameObject.name = gameObject.name + photonView.viewID;
     }
 
-    void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    private void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.isWriting)
         {
             //We own this player: send the others our data
             stream.SendNext((int)controllerScript._characterState);
             stream.SendNext(transform.position);
-            stream.SendNext(transform.rotation); 
+            stream.SendNext(transform.rotation);
         }
         else
         {
@@ -49,7 +48,7 @@ public class ThirdPersonNetwork : Photon.MonoBehaviour
     private Vector3 correctPlayerPos = Vector3.zero; //We lerp towards this
     private Quaternion correctPlayerRot = Quaternion.identity; //We lerp towards this
 
-    void Update()
+    private void Update()
     {
         if (!photonView.isMine)
         {
@@ -58,5 +57,4 @@ public class ThirdPersonNetwork : Photon.MonoBehaviour
             transform.rotation = Quaternion.Lerp(transform.rotation, correctPlayerRot, Time.deltaTime * 5);
         }
     }
-
 }

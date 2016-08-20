@@ -1,13 +1,10 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
 using ExitGames.Client.Photon;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
-using SupportClassPun = ExitGames.Client.Photon.SupportClass;
-
 
 #if UNITY_EDITOR || (!UNITY_ANDROID && !UNITY_IPHONE && !UNITY_PS3 && !UNITY_WINRT)
 
@@ -72,7 +69,6 @@ public class PingMonoEditor : PhotonPing
         bool replyMatch = PingBytes[PingBytes.Length - 1] == PingId && read == PingLength;
         if (!replyMatch) Debug.Log("ReplyMatch is false! ");
 
-
         this.Successful = read == PingBytes.Length && PingBytes[PingBytes.Length - 1] == PingId;
         this.GotResult = true;
         return true;
@@ -89,11 +85,9 @@ public class PingMonoEditor : PhotonPing
         }
         sock = null;
     }
-
 }
+
 #endif
-
-
 
 public class PhotonPingManager
 {
@@ -101,7 +95,6 @@ public class PhotonPingManager
     public static int Attempts = 5;
     public static bool IgnoreInitialAttempt = true;
     public static int MaxMilliseconsPerPing = 800;  // enter a value you're sure some server can beat (have a lower rtt)
-
 
     public Region BestRegion
     {
@@ -126,13 +119,12 @@ public class PhotonPingManager
     public bool Done { get { return this.PingsRunning == 0; } }
     private int PingsRunning;
 
-
     /// <remarks>
     /// Affected by frame-rate of app, as this Coroutine checks the socket for a result once per frame.
     /// </remarks>
     public IEnumerator PingSocket(Region region)
     {
-        region.Ping = Attempts*MaxMilliseconsPerPing;
+        region.Ping = Attempts * MaxMilliseconsPerPing;
 
         this.PingsRunning++;        // TODO: Add try-catch to make sure the PingsRunning are reduced at the end and that the lib does not crash the app
         PhotonPing ping;
@@ -148,14 +140,13 @@ public class PhotonPingManager
         }
         else
         {
-            ping = (PhotonPing) Activator.CreateInstance(PhotonHandler.PingImplementation);
+            ping = (PhotonPing)Activator.CreateInstance(PhotonHandler.PingImplementation);
         }
 
         //Debug.Log("Ping is: " + ping + " type " + ping.GetType());
 
         float rttSum = 0.0f;
         int replyCount = 0;
-
 
         // PhotonPing.StartPing() requires a plain IP address without port (on all but Windows 8 platforms).
         // So: remove port and do the DNS-resolving if needed
@@ -167,7 +158,6 @@ public class PhotonPingManager
         }
         cleanIpOfRegion = ResolveHost(cleanIpOfRegion);
         //Debug.Log("Resolved and port-less IP is: " + cleanIpOfRegion);
-
 
         for (int i = 0; i < Attempts; i++)
         {
@@ -186,7 +176,6 @@ public class PhotonPingManager
                 break;
             }
 
-
             while (!ping.Done())
             {
                 if (sw.ElapsedMilliseconds >= MaxMilliseconsPerPing)
@@ -197,7 +186,6 @@ public class PhotonPingManager
                 yield return 0; // keep this loop tight, to avoid adding local lag to rtt.
             }
             int rtt = (int)sw.ElapsedMilliseconds;
-
 
             if (IgnoreInitialAttempt && i == 0)
             {
@@ -280,5 +268,6 @@ public class PhotonPingManager
 
         return ipv4Address;
     }
+
 #endif
 }

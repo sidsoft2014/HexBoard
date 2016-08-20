@@ -1,15 +1,15 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
+using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
-using UnityEditor;
 
 [InitializeOnLoad]
 public class PunStartup : MonoBehaviour
-{ 
+{
     // paths to demo scenes to setup (if needed)
     private const string demoBasePath = "Assets/Photon Unity Networking/Demos/";
+
     private static string[] demoPaths =
         {
             "DemoHub/DemoHub-Scene.unity",
@@ -32,7 +32,7 @@ public class PunStartup : MonoBehaviour
         }
     }
 
-    static void OnUpdate()
+    private static void OnUpdate()
     {
         if (EditorApplication.isUpdating)
         {

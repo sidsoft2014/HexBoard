@@ -1,9 +1,6 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Collections;
-using System;
-using Hashtable = ExitGames.Client.Photon.Hashtable;
-
 
 /// <summary>Finds out which PickupItems are not spawned at the moment and send this to new players.</summary>
 /// <remarks>Attach this component to a single GameObject in the scene, not to all PickupItems.</remarks>
@@ -13,7 +10,6 @@ public class PickupItemSyncer : Photon.MonoBehaviour
     public bool IsWaitingForPickupInit;
     private const float TimeDeltaToIgnore = 0.2f;
 
-
     public void OnPhotonPlayerConnected(PhotonPlayer newPlayer)
     {
         if (PhotonNetwork.isMasterClient)
@@ -21,7 +17,7 @@ public class PickupItemSyncer : Photon.MonoBehaviour
             this.SendPickedUpItems(newPlayer);
         }
     }
-    
+
     public void OnJoinedRoom()
     {
         Debug.Log("Joined Room. isMasterClient: " + PhotonNetwork.isMasterClient + " id: " + PhotonNetwork.player.ID);
@@ -34,7 +30,6 @@ public class PickupItemSyncer : Photon.MonoBehaviour
         }
     }
 
-
     public void AskForPickupItemSpawnTimes()
     {
         if (this.IsWaitingForPickupInit)
@@ -46,7 +41,6 @@ public class PickupItemSyncer : Photon.MonoBehaviour
                 return;
             }
 
-
             // find a another player (than the master, who likely is gone) to ask for the PickupItem spawn times
             PhotonPlayer nextPlayer = PhotonNetwork.masterClient.GetNext();
             if (nextPlayer == null || nextPlayer.Equals(PhotonNetwork.player))
@@ -54,11 +48,11 @@ public class PickupItemSyncer : Photon.MonoBehaviour
                 nextPlayer = PhotonNetwork.player.GetNext();
                 //Debug.Log("This player is the Master's next. Asking this client's 'next' player: " + ((nextPlayer != null) ? nextPlayer.ToStringFull() : ""));
             }
-            
+
             if (nextPlayer != null && !nextPlayer.Equals(PhotonNetwork.player))
             {
                 this.photonView.RPC("RequestForPickupItems", nextPlayer);
-                
+
                 // you could restart this invoke and try to find another player after 4 seconds. but after a while it doesnt make a difference anymore
                 //this.Invoke("AskForPickupItemSpawnTimes", 2.0f);
             }
@@ -102,7 +96,6 @@ public class PickupItemSyncer : Photon.MonoBehaviour
         double now = PhotonNetwork.time;
         double soon = now + TimeDeltaToIgnore;
 
-
         PickupItem[] items = new PickupItem[PickupItem.DisabledPickupItems.Count];
         PickupItem.DisabledPickupItems.CopyTo(items);
 
@@ -132,7 +125,6 @@ public class PickupItemSyncer : Photon.MonoBehaviour
         this.photonView.RPC("PickupItemInit", targetPlayer, PhotonNetwork.time, valuesToSend.ToArray());
     }
 
-
     [PunRPC]
     public void PickupItemInit(double timeBase, float[] inactivePickupsAndTimes)
     {
@@ -141,10 +133,9 @@ public class PickupItemSyncer : Photon.MonoBehaviour
         // if there are no inactive pickups, the sender will send a list of 0 items. this is not a problem...
         for (int i = 0; i < inactivePickupsAndTimes.Length / 2; i++)
         {
-            int arrayIndex = i*2;
+            int arrayIndex = i * 2;
             int viewIdOfPickup = (int)inactivePickupsAndTimes[arrayIndex];
             float timeUntilRespawnBasedOnTimeBase = inactivePickupsAndTimes[arrayIndex + 1];
-
 
             PhotonView view = PhotonView.Find(viewIdOfPickup);
             PickupItem pi = view.GetComponent<PickupItem>();
@@ -164,7 +155,7 @@ public class PickupItemSyncer : Photon.MonoBehaviour
                     timeBeforeRespawn = 0.0f;
                 }
 
-                pi.PickedUp((float) timeBeforeRespawn);
+                pi.PickedUp((float)timeBeforeRespawn);
             }
         }
     }

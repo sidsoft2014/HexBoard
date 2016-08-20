@@ -1,15 +1,14 @@
 using UnityEngine;
-using System.Collections;
 
 public class OnClickInstantiate : MonoBehaviour
 {
     public GameObject Prefab;
     public int InstantiateType;
-    private string[] InstantiateTypeNames = {"Mine", "Scene"};
+    private string[] InstantiateTypeNames = { "Mine", "Scene" };
 
     public bool showGui;
 
-    void OnClick()
+    private void OnClick()
     {
         if (!PhotonNetwork.inRoom)
         {
@@ -22,13 +21,14 @@ public class OnClickInstantiate : MonoBehaviour
             case 0:
                 PhotonNetwork.Instantiate(Prefab.name, InputToEvent.inputHitPos + new Vector3(0, 5f, 0), Quaternion.identity, 0);
                 break;
+
             case 1:
                 PhotonNetwork.InstantiateSceneObject(Prefab.name, InputToEvent.inputHitPos + new Vector3(0, 5f, 0), Quaternion.identity, 0, null);
                 break;
         }
     }
 
-    void OnGUI()
+    private void OnGUI()
     {
         if (showGui)
         {
@@ -37,6 +37,4 @@ public class OnClickInstantiate : MonoBehaviour
             GUILayout.EndArea();
         }
     }
-
-
 }

@@ -44,7 +44,6 @@ public class DemoBoxesGui : MonoBehaviour
         }
     }
 
-
     public IEnumerator SwapTip()
     {
         float alpha = 1.0f;
@@ -55,7 +54,7 @@ public class DemoBoxesGui : MonoBehaviour
             this.GuiTextForTips.color = new Color(this.GuiTextForTips.color.r, this.GuiTextForTips.color.r, this.GuiTextForTips.color.r, alpha);
             yield return null;
         }
-        this.tipsIndex = (this.tipsIndex + 1)%this.tips.Length;
+        this.tipsIndex = (this.tipsIndex + 1) % this.tips.Length;
         this.GuiTextForTips.text = this.tips[this.tipsIndex];
         while (alpha < 1.0f)
         {
@@ -65,7 +64,6 @@ public class DemoBoxesGui : MonoBehaviour
             yield return null;
         }
     }
-
 
     private void OnGUI()
     {

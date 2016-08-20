@@ -1,6 +1,5 @@
 using System.Text;
 using UnityEngine;
-using System.Collections;
 
 public class SupportLogger : MonoBehaviour
 {
@@ -31,7 +30,6 @@ public class SupportLogging : MonoBehaviour
         }
     }
 
-
     protected void OnApplicationPause(bool pause)
     {
         Debug.Log("SupportLogger OnApplicationPause: " + pause + " connected: " + PhotonNetwork.connected);
@@ -59,10 +57,8 @@ public class SupportLogging : MonoBehaviour
         sb.AppendFormat("Server: {0}. Region: {1} ", PhotonNetwork.ServerAddress, PhotonNetwork.networkingPeer.CloudRegion);
         sb.AppendFormat("HostType: {0} ", PhotonNetwork.PhotonServerSettings.HostType);
 
-
         Debug.Log(sb.ToString());
     }
-
 
     public void OnConnectedToPhoton()
     {
@@ -77,7 +73,7 @@ public class SupportLogging : MonoBehaviour
 
     public void OnFailedToConnectToPhoton(DisconnectCause cause)
     {
-        Debug.Log("SupportLogger OnFailedToConnectToPhoton("+cause+").");
+        Debug.Log("SupportLogger OnFailedToConnectToPhoton(" + cause + ").");
         this.LogBasics();
     }
 

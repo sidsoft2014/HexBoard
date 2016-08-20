@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class ClickAndDrag : Photon.MonoBehaviour
 {
@@ -7,16 +6,16 @@ public class ClickAndDrag : Photon.MonoBehaviour
     private bool following;
     private float factor = -0.1f;
 
-	// Update is called once per frame
-	void Update ()
-	{
+    // Update is called once per frame
+    private void Update()
+    {
         if (!photonView.isMine)
         {
             return;
         }
 
-	    InputToEvent input = Camera.main.GetComponent<InputToEvent>();
-	    if (input == null) return;
+        InputToEvent input = Camera.main.GetComponent<InputToEvent>();
+        if (input == null) return;
         if (!following)
         {
             if (input.Dragging)
@@ -34,7 +33,7 @@ public class ClickAndDrag : Photon.MonoBehaviour
             if (input.Dragging)
             {
                 Vector3 target = camOnPress - (new Vector3(input.DragVector.x, 0, input.DragVector.y) * factor);
-                this.transform.position = Vector3.Lerp(this.transform.position, target, Time.deltaTime*.5f);
+                this.transform.position = Vector3.Lerp(this.transform.position, target, Time.deltaTime * .5f);
             }
             else
             {
@@ -42,5 +41,5 @@ public class ClickAndDrag : Photon.MonoBehaviour
                 following = false;
             }
         }
-	}
+    }
 }

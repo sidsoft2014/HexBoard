@@ -1,17 +1,14 @@
 using UnityEngine;
-using System.Collections;
 
 public class GUIFriendsInRoom : MonoBehaviour
 {
     public Rect GuiRect;
 
-
-    void Start()
+    private void Start()
     {
         GuiRect = new Rect(Screen.width / 4, 80, Screen.width / 2, Screen.height - 100);
     }
 
-    
     public void OnGUI()
     {
         if (!PhotonNetwork.inRoom)

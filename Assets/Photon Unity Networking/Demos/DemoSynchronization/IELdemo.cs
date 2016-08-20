@@ -1,7 +1,4 @@
-using ExitGames.Client.Photon;
 using UnityEngine;
-using System.Collections;
-using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 /// <summary>
 /// A minimal UI to show connection info in a demo.

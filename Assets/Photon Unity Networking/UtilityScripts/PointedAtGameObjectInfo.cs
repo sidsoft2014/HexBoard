@@ -1,10 +1,9 @@
 using UnityEngine;
-using System.Collections;
 
 [RequireComponent(typeof(InputToEvent))]
-public class PointedAtGameObjectInfo : MonoBehaviour 
+public class PointedAtGameObjectInfo : MonoBehaviour
 {
-    void OnGUI()
+    private void OnGUI()
     {
         if (InputToEvent.goPointedAt != null)
         {
@@ -15,5 +14,4 @@ public class PointedAtGameObjectInfo : MonoBehaviour
             }
         }
     }
-
 }

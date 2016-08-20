@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections;
 
 public class MessageOverlay : MonoBehaviour
 {
@@ -20,15 +19,15 @@ public class MessageOverlay : MonoBehaviour
         SetActive(true);
     }
 
-    void SetActive(bool enable)
+    private void SetActive(bool enable)
     {
         foreach (GameObject o in Objects)
         {
-            #if UNITY_3_5
+#if UNITY_3_5
             o.SetActiveRecursively(enable);
-            #else
+#else
             o.SetActive(enable);
-            #endif
+#endif
         }
     }
 }

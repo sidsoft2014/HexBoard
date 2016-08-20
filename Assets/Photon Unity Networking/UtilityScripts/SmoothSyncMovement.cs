@@ -1,9 +1,9 @@
 using UnityEngine;
-using System.Collections;
 
 public class SmoothSyncMovement : Photon.MonoBehaviour
 {
     public float SmoothingDelay = 5;
+
     public void Awake()
     {
         if (this.photonView == null || this.photonView.observed != this)
@@ -18,7 +18,7 @@ public class SmoothSyncMovement : Photon.MonoBehaviour
         {
             //We own this player: send the others our data
             stream.SendNext(transform.position);
-            stream.SendNext(transform.rotation); 
+            stream.SendNext(transform.rotation);
         }
         else
         {
@@ -40,5 +40,4 @@ public class SmoothSyncMovement : Photon.MonoBehaviour
             transform.rotation = Quaternion.Lerp(transform.rotation, correctPlayerRot, Time.deltaTime * this.SmoothingDelay);
         }
     }
-
 }

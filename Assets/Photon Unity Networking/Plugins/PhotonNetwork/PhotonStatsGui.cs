@@ -3,18 +3,16 @@
 /// <summary>Part of the [Optional GUI](@ref optionalGui).</summary>
 #pragma warning restore 1587
 
-
 using ExitGames.Client.Photon;
 using UnityEngine;
 
-
 /// <summary>
-/// Basic GUI to show traffic and health statistics of the connection to Photon, 
+/// Basic GUI to show traffic and health statistics of the connection to Photon,
 /// toggled by shift+tab.
 /// </summary>
 /// <remarks>
 /// The shown health values can help identify problems with connection losses or performance.
-/// Example: 
+/// Example:
 /// If the time delta between two consecutive SendOutgoingCommands calls is a second or more,
 /// chances rise for a disconnect being caused by this (because acknowledgements to the server
 /// need to be sent in due time).
@@ -42,7 +40,6 @@ public class PhotonStatsGui : MonoBehaviour
 
     /// <summary>Unity GUI Window ID (must be unique or will cause issues).</summary>
     public int WindowId = 100;
-
 
     public void Start()
     {
@@ -92,7 +89,7 @@ public class PhotonStatsGui : MonoBehaviour
         this.healthStatsVisible = GUILayout.Toggle(this.healthStatsVisible, "health");
         this.trafficStatsOn = GUILayout.Toggle(this.trafficStatsOn, "traffic");
         GUILayout.EndHorizontal();
-        
+
         string total = string.Format("Out|In|Sum:\t{0,4} | {1,4} | {2,4}", gls.TotalOutgoingMessageCount, gls.TotalIncomingMessageCount, gls.TotalMessageCount);
         string elapsedTime = string.Format("{0}sec average:", elapsedMs);
         string average = string.Format("Out|In|Sum:\t{0,4} | {1,4} | {2,4}", gls.TotalOutgoingMessageCount / elapsedMs, gls.TotalIncomingMessageCount / elapsedMs, gls.TotalMessageCount / elapsedMs);
