@@ -86,12 +86,10 @@ public class HexGrid : MonoBehaviour
 
     public HexCell GetCell(HexCoordinates coords)
     {
-        foreach (var item in cells)
+        foreach (var cell in cells)
         {
-            if (coords.Equals(item.coordinates))
-            {
-                return item;
-            }
+            if (cell.coordinates.X == coords.X && cell.coordinates.Z == coords.Z)
+                return cell;
         }
         return null;
     }
