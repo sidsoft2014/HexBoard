@@ -2,6 +2,7 @@
 
 public class GameManager : MonoBehaviour
 {
+    private Player[] players;
     private Navigatable[] navObjs;
 
     public HexGrid grid;
@@ -12,16 +13,21 @@ public class GameManager : MonoBehaviour
         if (grid == null)
             grid = FindObjectOfType<HexGrid>();
         if (grid == null)
-            throw new System.Exception("No grid found");
+            Debug.LogError("No grid found");
 
         navObjs = FindObjectsOfType<Navigatable>();
         if (navObjs == null || navObjs.Length < 1)
             Debug.LogError("No navigatable objects found in scene.");
+
+        players = FindObjectsOfType<Player>();
+        if (players == null || players.Length < 1)
+            Debug.LogError("No players found in scene.");
     }
 
     // Update is called once per frame
     private void Update()
     {
+
     }
 
     public MoveType GetMoveType(Navigatable mover, HexCoordinates destination, out Vector3? pos)

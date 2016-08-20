@@ -1,8 +1,10 @@
 ﻿using Photon;
 using UnityEngine;
 
+
 public class Navigatable : PunBehaviour
 {
+    public Character character;
     public float speed = 20;
 
     private bool _canMove;
@@ -14,10 +16,8 @@ public class Navigatable : PunBehaviour
     private Renderer _renderer;
     private Material[] _startingMats;
     private float _step;
+    private int _spacesMoved;
 
-    public Navigatable()
-    {
-    }
 
     public HexCoordinates CurrentCoordinates { get; private set; }
 
@@ -118,6 +118,9 @@ public class Navigatable : PunBehaviour
 
     public void HandleInput()
     {
+        if (_spacesMoved >= character.Moves)
+            return;
+
         HexCoordinates? hex = null;
 
         // Left
@@ -165,6 +168,7 @@ public class Navigatable : PunBehaviour
             return;
         }
 
+        _spacesMoved++;
         CurrentCoordinates = (HexCoordinates)hex;
         _nextPosition = (Vector3)pos;
         _isMoving = true;
